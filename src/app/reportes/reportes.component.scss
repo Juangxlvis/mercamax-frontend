@@ -1,0 +1,244 @@
+/* Colores de tu paleta MERCAMAX */
+$color-primary: #2e7d32;
+$color-text-dark: #333;
+$color-text-light: #666;
+$color-background: #f5f5f5;
+$color-card-background: #fff;
+$color-card-stats: #e0e0e0;
+$color-border-subtle: #eee;
+$color-success: #2e7d32; 
+$color-warning: #ef6c00; 
+
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+:host {
+  font-family: 'Roboto', sans-serif;
+  color: $color-text-dark;
+}
+
+.page-content {
+  padding: 20px;
+  flex-grow: 1;
+  background-color: $color-background;
+}
+
+/* --- Estilos para las tarjetas de estadísticas --- */
+.stats-cards {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.stats-cards .card {
+  flex: 1;
+  background-color: $color-card-stats;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.stats-cards .card:hover {
+  transform: translateY(-5px);
+}
+
+.card .value {
+  font-size: 2.5em;
+  font-weight: 700;
+  color: $color-text-dark;
+}
+
+.card .label {
+  display: block;
+  font-size: 0.9em;
+  color: $color-text-light;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* --- Estilos para la sección de la tabla y el formulario --- */
+.ubicaciones-crud-container {
+  background-color: $color-card-background;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.toolbar .filters {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.search-input {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 16px;
+}
+
+.add-button,
+.filter-button,
+.export-button {
+  font-weight: 500;
+}
+
+.add-button {
+  background-color: $color-primary !important;
+  color: white !important;
+}
+
+/* --- Estilos de la tabla de Angular Material --- */
+.mercamax-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.mercamax-table .mat-header-cell {
+  background-color: #f7f7f7;
+  color: #555;
+  font-weight: 600;
+  border-bottom: 2px solid #ddd;
+  padding: 12px;
+}
+
+.mercamax-table .mat-cell {
+  color: #444;
+  padding: 12px;
+  border-bottom: 1px solid $color-border-subtle;
+}
+
+.mercamax-table .mat-row:hover {
+  background-color: #fcfcfc;
+}
+
+.acciones-cell {
+  text-align: center;
+}
+
+/* --- Estilos para el formulario --- */
+.crud-form-view mat-card {
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+.crud-form-view form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+/* Estilo para los inputs de Angular Material */
+mat-form-field {
+  width: 100%;
+}
+
+/* --- Estilo específico para los h3 en negrita --- */
+h3 {
+  font-weight: bold;
+}
+
+/* --- Estilos del reporte (parte de tu código anterior) --- */
+.reports-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}
+
+.report-card {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.report-actions {
+  margin: 15px 0;
+  display: flex;
+  gap: 10px;
+}
+
+.report-results {
+  margin-top: 20px;
+}
+
+.summary-card {
+  background-color: #f0f4f8;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.summary-card h4 {
+  margin: 0;
+  color: $color-text-light;
+  font-weight: 500;
+}
+
+.summary-card .value {
+  font-size: 2.5em;
+  font-weight: 700;
+  color: $color-primary;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.turnover-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.metric-card {
+  padding: 15px;
+  text-align: center;
+}
+
+.metric-card h4 {
+  margin: 0;
+  font-size: 0.9em;
+  color: #999;
+}
+
+.metric-card p {
+  font-size: 1.5em;
+  font-weight: 500;
+  color: $color-text-dark;
+}
+
+.result-card {
+  text-align: center;
+  padding: 20px;
+  font-weight: 500;
+}
+
+.result-card.ok {
+  background-color: lighten($color-primary, 40%);
+  color: $color-primary;
+  border: 1px solid $color-primary;
+}
+
+.result-card.warning {
+  background-color: lighten($color-warning, 40%);
+  color: $color-warning;
+  border: 1px solid $color-warning;
+}

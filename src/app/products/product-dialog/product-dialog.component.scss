@@ -1,0 +1,107 @@
+/* src/app/products/product-dialog/product-dialog.component.scss */
+
+
+$mercamax-green: #27AE60; 
+$mercamax-light-green: #1E8449; 
+$text-dark: #333;
+$text-light: #555;
+$border-color: #e0e0e0;
+$background-light: #f8f9fa;
+
+
+// Estilo general del diálogo
+:host {
+  display: block;
+  padding: 0; 
+  font-family: 'Roboto', sans-serif; 
+}
+
+// Título del formulario
+h1[mat-dialog-title] {
+  font-weight: 700; 
+  font-size: 1.8rem; 
+  color: $mercamax-green; 
+  padding: 24px;
+  border-bottom: 2px solid $mercamax-green; 
+  margin-bottom: 24px;
+  text-align: center; 
+}
+
+// Contenedor principal del formulario
+.mat-dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+  padding: 0 24px; 
+  overflow-y: auto; 
+  max-height: 60vh; 
+}
+
+// Estilos para los campos de Material Design
+mat-form-field {
+  width: 100%;
+  .mat-form-field-wrapper {
+    padding-bottom: 4rem; 
+  }
+  .mat-form-field-label {
+    color: $text-light; 
+  }
+  .mat-input-element {
+    color: $text-dark; 
+  }
+}
+
+// Estilos para los botones de acción del diálogo
+.mat-dialog-actions {
+  padding: 16px 24px; 
+  display: flex;
+  justify-content: flex-end; 
+  gap: 12px; 
+  border-top: 1px solid $border-color; 
+  margin-top: 24px;
+}
+
+// Estilos específicos para el botón Guardar
+button[mat-button] {
+  font-weight: bold;
+  min-width: 100px;
+  border-radius: 4px; 
+  
+  
+  &.mat-primary { // Para el botón 'Guardar'
+    background-color: $mercamax-green; 
+    color: white;
+    &:hover {
+      background-color: $mercamax-light-green;   
+    }
+  }
+
+  // Estilo para el botón Cancelar
+  &:not(.mat-primary) {
+    color: $text-dark;
+    background-color: #e0e0e0;
+    &:hover {
+      background-color: #d0d0d0;
+    }
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Estilos para mensajes de error
+mat-error {
+  font-size: 0.75rem;
+  color: red;
+  margin-top: 4px;
+}
+.products-sidenav-container {
+  height: calc(100vh - 64px); 
+  background-color: #f0f2f5; 
+}
+
+.products-dashboard-content {
+  padding: 20px;
+}

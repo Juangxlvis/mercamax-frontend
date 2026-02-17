@@ -1,0 +1,107 @@
+// header.component.scss
+
+$text-color-dark: #333;
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 100;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px; // Espacio entre notificaciones y perfil
+}
+
+.notifications-dropdown,
+.profile-dropdown {
+  position: relative;
+  cursor: pointer;
+  
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0; 
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    min-width: 200px;
+    margin-top: 10px;
+    z-index: 200;
+    
+    &.show {
+      display: block;
+    }
+    
+    a {
+      display: block;
+      padding: 10px 15px;
+      text-decoration: none;
+      color: #333;
+      &:hover {
+        background-color: #f4f4f4;
+      }
+    }
+    .no-notifications {
+        font-style: italic;
+        color: #888;
+    }
+  }
+}
+
+.notifications-dropdown {
+  position: relative; // Necesario para posicionar el badge
+  
+  .notification-icon {
+    width: 40px; 
+    height: 40px;
+    border-radius: 50%;
+    vertical-align: middle; 
+  }
+  
+  .notification-badge {
+    position: absolute;
+    top: -5px; // Ajusta la posición vertical
+    right: -5px; // Ajusta la posición horizontal
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 10px;
+    line-height: 1; // Para centrar el texto verticalmente
+    min-width: 18px; // Para números de 2 dígitos
+    text-align: center;
+  }
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  
+  img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+}
+
+.menu-toggle {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: $text-color-dark;
+  cursor: pointer;
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+}

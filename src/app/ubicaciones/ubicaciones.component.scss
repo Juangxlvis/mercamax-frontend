@@ -1,0 +1,98 @@
+mat-card {
+  width: 100%;
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+mat-card-header {
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+}
+
+mat-card-title {
+  font-size: 24px;
+  font-weight: bold;
+  font-family: 'Roboto', sans-serif;
+  color: #1E8449;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.mat-column-id {
+  width: 80px;
+  padding-left: 16px;
+}
+
+.mat-column-capacidad_maxima {
+  width: 120px;
+}
+
+th.mat-header-cell, td.mat-cell {
+  padding: 12px 8px;
+  text-align: left;
+  font-family: 'Roboto', sans-serif;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+th.mat-header-cell {
+  font-weight: 600;
+  color: #1E8449;
+  background-color: #f8f8f8;
+}
+
+td.mat-cell {
+  color: #666;
+}
+
+td.mat-cell button[mat-icon-button] {
+  margin-right: 8px;
+}
+
+.mat-icon {
+  font-size: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+button[mat-raised-button] {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 4px;
+}
+
+button[color="primary"] {
+  background-color: #1E8449;
+  color: white;
+}
+
+button[color="basic"] {
+  background-color: #f0f0f0;
+  color: #666;
+}
+
+button[mat-raised-button]:hover {
+  opacity: 0.9;
+}

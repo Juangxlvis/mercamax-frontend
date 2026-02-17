@@ -1,0 +1,93 @@
+<div *ngIf="view === 'list'">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Gestión de Ubicaciones</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <button mat-raised-button color="primary" (click)="newUbicacion()">Nueva Ubicación</button>
+      <table mat-table [dataSource]="ubicaciones">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let ubicacion">{{ ubicacion.id }}</td>
+        </ng-container>
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef>Nombre</th>
+          <td mat-cell *matCellDef="let ubicacion">{{ ubicacion.nombre }}</td>
+        </ng-container>
+        <ng-container matColumnDef="tipo">
+          <th mat-header-cell *matHeaderCellDef>Tipo</th>
+          <td mat-cell *matCellDef="let ubicacion">{{ getTipoLabel(ubicacion.tipo) }}</td>
+        </ng-container>
+        <ng-container matColumnDef="categoria_nombre">
+          <th mat-header-cell *matHeaderCellDef>Categoría</th>
+          <td mat-cell *matCellDef="let ubicacion">{{ getCategoriaNombre(ubicacion.categoria) }}</td>
+        </ng-container>
+        <ng-container matColumnDef="parent_nombre">
+          <th mat-header-cell *matHeaderCellDef>Ubicación principal</th>
+          <td mat-cell *matCellDef="let ubicacion">{{ getParentNombre(ubicacion.parent) }}</td>
+        </ng-container>
+        <ng-container matColumnDef="capacidad_maxima">
+          <th mat-header-cell *matHeaderCellDef>Capacidad Máxima</th>
+          <td mat-cell *matCellDef="let ubicacion">{{ ubicacion.capacidad_maxima || 'Sin límite' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let ubicacion">
+            <button mat-icon-button color="accent" (click)="editUbicacion(ubicacion)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteUbicacion(ubicacion.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<div *ngIf="view === 'form'">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{ isEditing ? 'Editar' : 'Nueva' }} Ubicación</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form (ngSubmit)="saveUbicacion()">
+        <mat-form-field appearance="fill">
+          <mat-label>Nombre</mat-label>
+          <input matInput [(ngModel)]="ubicacionForm.nombre" name="nombre" required>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Tipo</mat-label>
+          <mat-select [(ngModel)]="ubicacionForm.tipo" name="tipo" required>
+            <mat-option *ngFor="let tipo of tiposUbicacion" [value]="tipo.value">{{ tipo.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Categoría</mat-label>
+          <mat-select [(ngModel)]="ubicacionForm.categoria" name="categoria">
+            <mat-option [value]="null">Ninguna</mat-option>
+            <mat-option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nombre }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Ubicación principal</mat-label>
+          <mat-select [(ngModel)]="ubicacionForm.parent" name="parent">
+            <mat-option [value]="null">Ninguna</mat-option>
+            <mat-option *ngFor="let padre of getUbicacionesPadre()" [value]="padre.id">{{ padre.nombre }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Capacidad Máxima</mat-label>
+          <input matInput type="number" [(ngModel)]="ubicacionForm.capacidad_maxima" name="capacidad_maxima">
+        </mat-form-field>
+        <div class="form-actions">
+          <button mat-raised-button color="primary" type="submit">Guardar</button>
+          <button mat-raised-button color="basic" (click)="view = 'list'">Cancelar</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

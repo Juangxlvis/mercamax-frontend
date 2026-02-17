@@ -1,0 +1,67 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="logo">
+      <img src="assets/images/FORMULARIOS.png" alt="Logotipo del Supermercado">
+    </div>
+    <h2>Completar registro</h2>
+    <p>Por favor, ingresa tu nombre de usuario y contraseña para finalizar el registro.</p>
+    <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <input
+          type="text"
+          id="username"
+          formControlName="username"
+          placeholder="Ingresa tu nombre de usuario"
+        />
+        <div *ngIf="registrationForm.get('username')?.invalid && registrationForm.get('username')?.touched" class="error-message-inline">
+          El nombre de usuario es obligatorio.
+        </div>
+      </div>
+      <div class="form-group">
+        <input
+          type="password"
+          id="password1"
+          formControlName="password1"
+          placeholder="Ingresa tu contraseña"
+        />
+        <div *ngIf="registrationForm.get('password1')?.invalid && registrationForm.get('password1')?.touched" class="error-message-inline">
+          La contraseña debe tener al menos 8 caracteres.
+        </div>
+      </div>
+      <div class="form-group">
+        <input
+          type="password"
+          id="password2"
+          formControlName="password2"
+          placeholder="Confirma tu contraseña"
+        />
+        <div *ngIf="registrationForm.get('password2')?.invalid && registrationForm.get('password2')?.touched" class="error-message-inline">
+          La confirmación de la contraseña es obligatoria.
+        </div>
+        <div *ngIf="passwordsMismatch" class="error-message-inline">
+          Las contraseñas no coinciden.
+        </div>
+      </div>
+      <div *ngIf="error" class="error-message">{{ error }}</div>
+      <button type="submit" [disabled]="registrationForm.invalid || passwordsMismatch || isLoading">
+        <span *ngIf="!isLoading">Registrar</span>
+        <span *ngIf="isLoading">Registrando</span>
+        <span *ngIf="isLoading" class="spinner"></span>
+      </button>
+    </form>
+    <div class="login-footer">
+      <span>¿Ya tienes una cuenta?</span>
+      <a routerLink="/login">Inicia sesión</a>
+    </div>
+  </div>
+</div>
+<div class="registration-container">
+    
+<div *ngIf="successMessage" class="custom-alert success-alert">
+  <div class="alert-icon">
+    ✔️
+  </div>
+  <div class="alert-message">
+    <p>{{ successMessage }}</p>
+  </div>
+</div>

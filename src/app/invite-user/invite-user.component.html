@@ -1,0 +1,62 @@
+<div class="invite-container">
+  <div class="invite-card">
+    <div class="logo">
+      <img src="assets/images/FORMULARIOS.png" alt="Logotipo del Supermercado">
+    </div>
+    <h2>Invitar usuario</h2>
+    <p>Completa los datos para invitar a un nuevo usuario al sistema.</p>
+
+    <form [formGroup]="inviteForm" (ngSubmit)="onSubmit()">
+      <!-- Nombre -->
+      <div class="form-group">
+        <input id="first_name" type="text" formControlName="first_name" placeholder="Nombre del usuario" />
+        <div *ngIf="inviteForm.get('first_name')?.invalid && inviteForm.get('first_name')?.touched" class="error-message-inline">
+          El nombre es obligatorio.
+        </div>
+      </div>
+
+      <!-- Correo -->
+      <div class="form-group">
+        <input id="email" type="email" formControlName="email" placeholder="Correo electrónico" />
+        <div *ngIf="inviteForm.get('email')?.invalid && inviteForm.get('email')?.touched" class="error-message-inline">
+          Ingresa un correo válido.
+        </div>
+      </div>
+
+      <!-- Rol -->
+      <div class="form-group">
+        <select id="rol" formControlName="rol" [disabled]="loadingRoles || !roles.length">
+          <option value="" disabled selected>Selecciona un rol</option>
+          <option *ngFor="let r of roles" [value]="r.value">
+            {{ r.view_value }}
+          </option>
+        </select>
+        <div *ngIf="loadingRoles" class="error-message-inline">
+          Cargando roles...
+        </div>
+        <div *ngIf="!loadingRoles && !roles.length" class="error-message-inline">
+          No se pudieron cargar los roles.
+        </div>
+        <div *ngIf="inviteForm.get('rol')?.invalid && inviteForm.get('rol')?.touched" class="error-message-inline">
+          El rol es obligatorio.
+        </div>
+      </div>
+
+      <!-- Botón -->
+      <button type="submit" [disabled]="!inviteForm.valid || loading">
+        <span *ngIf="!loading">Enviar Invitación</span>
+        <span *ngIf="loading" class="spinner"></span>
+      </button>
+
+      <!-- Mensaje de error -->
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Mensaje de éxito -->
+      <div *ngIf="successMessage" class="success-message">
+        {{ successMessage }}
+      </div>
+    </form>
+  </div>
+</div>

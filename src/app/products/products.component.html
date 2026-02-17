@@ -1,0 +1,108 @@
+
+<mat-sidenav-container class="products-sidenav-container">
+  <mat-sidenav #sidenav mode="over" position="end">
+    <app-filters-sidebar 
+      (filtersApplied)="applyFilters($event)" 
+      (closeSidebar)="sidenav.close()">
+    </app-filters-sidebar>
+
+  </mat-sidenav>
+
+  <mat-sidenav-content class="products-dashboard-content">
+    <div class="products-dashboard">
+
+      <div class="toolbar">
+        <div class="search-bar-container">
+          <i class="fas fa-search"></i>
+          <input 
+            type="text" 
+            placeholder="Buscar por nombre o código" 
+            [(ngModel)]="searchText" 
+            (input)="filterProducts()">
+        </div>
+        <div class="tools">
+          <button class="icon-button" (click)="openFiltersSidebar()">
+            <i class="fas fa-filter"></i>
+            <span>Filtros</span>
+          </button>
+          <button class="icon-button" (click)="exportProducts()">
+            <i class="fas fa-file-export"></i>
+            <span>Exportar</span>
+          </button>
+        </div>
+        <div class="filter-actions">
+          <button class="add-product-button primary" (click)="openCreateProductDialog()">
+            <i class="fas fa-plus"></i> Añadir Producto
+          </button>
+        </div>
+      </div>
+
+      <div class="summary-container">
+        <div class="summary-card">
+          <span class="value">{{ stockValue | currency:'COP':'symbol':'1.0-0' }}</span>
+          <span class="label">Valor de Venta del Stock</span>
+        </div>
+        <div class="summary-card">
+          <span class="value">{{ stockCost | currency:'COP':'symbol':'1.0-0' }}</span>
+          <span class="label">Costo del Stock</span>
+        </div>
+        <div class="summary-card">
+          <span class="value">{{ estimatedProfit | currency:'COP':'symbol':'1.0-0' }}</span>
+          <span class="label">Ganancia Estimada</span>
+        </div>
+        <div class="summary-card">
+          <span class="value">{{ totalProductsCount }}</span>
+          <span class="label">Productos en Catálogo</span>
+        </div>
+      </div>
+
+      <div class="products-table-container">
+        
+        <div *ngIf="isLoading" class="loading-indicator">
+          <mat-spinner></mat-spinner>
+          <p>Cargando productos...</p>
+        </div>
+
+        <div *ngIf="!isLoading && filteredProducts.length === 0" class="no-products-message">
+          <p>No se encontraron productos. ¡Intenta añadir uno!</p>
+        </div>
+
+        <table *ngIf="!isLoading && filteredProducts.length > 0" class="products-table">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Código</th>
+              <th>Categoría</th>
+              <th>Stock Total</th>
+              <th>Costo Promedio</th>
+              <th>Precio Venta</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let product of filteredProducts" (click)="viewProduct(product.id)">
+              <td>{{ product.nombre }}</td>
+              <td>{{ product.codigo_barras }}</td>
+              <td>{{ getCategoryName(product.categoria) }}</td>
+              <td>
+                <span [ngClass]="{'low-stock': product.stock_total || 0 <= product.stock_minimo}">
+                  {{ product.stock_total }}
+                </span>
+              </td>
+              <td>{{ product.costo_promedio_ponderado | currency:'COP':'symbol':'1.0-0' }}</td>
+              <td>{{ product.precio_venta | currency:'COP':'symbol':'1.0-0' }}</td>
+              <td>
+                <button class="btn btn-icon" (click)="editProduct(product, $event)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-icon btn-delete" (click)="deleteProduct(product.id, $event)">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

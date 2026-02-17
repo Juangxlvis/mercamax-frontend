@@ -1,0 +1,67 @@
+<h1 mat-dialog-title>Añadir Nuevo Producto al Catálogo</h1>
+<div mat-dialog-content>
+  <form #productForm="ngForm">
+    <mat-form-field appearance="fill">
+      <mat-label>Nombre</mat-label>
+      <input matInput [(ngModel)]="data.nombre" name="nombre" required #nombreField="ngModel">
+      <mat-error *ngIf="nombreField.invalid && nombreField.touched">
+        El nombre es requerido.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Código de Barras</mat-label>
+      <input matInput [(ngModel)]="data.codigo_barras" name="codigo_barras" required #codigoBarrasField="ngModel">
+      <mat-error *ngIf="codigoBarrasField.invalid && codigoBarrasField.touched">
+        El código de barras es requerido.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+        <mat-label>Categoría</mat-label>
+        <mat-select [(ngModel)]="data.categoria" name="categoria" required #categoriaField="ngModel">
+            <mat-option *ngFor="let categoria of categorias" [value]="categoria.id">
+                {{ categoria.nombre }}
+            </mat-option>
+        </mat-select>
+        <mat-error *ngIf="categoriaField.invalid && categoriaField.touched">
+            La categoría es requerida.
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Descripción</mat-label>
+      <input matInput [(ngModel)]="data.descripcion" name="descripcion">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Precio de Venta</mat-label>
+      <input matInput type="number" [(ngModel)]="data.precio_venta" name="precio_venta" required min="0" #precioVentaField="ngModel">
+      <mat-error *ngIf="precioVentaField.invalid && precioVentaField.touched">
+        El precio de venta es requerido.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Stock Mínimo (Punto de Reorden)</mat-label>
+      <input matInput type="number" [(ngModel)]="data.stock_minimo" name="stock_minimo" required min="0" #stockMinimoField="ngModel">
+      <mat-error *ngIf="stockMinimoField.invalid && stockMinimoField.touched">
+        El stock mínimo es requerido.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+        <mat-label>Proveedor</mat-label>
+        <mat-select [(ngModel)]="data.proveedor" name="proveedor" required>
+            <mat-option *ngFor="let proveedor of proveedores" [value]="proveedor.id">
+                {{ proveedor.nombre }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+  </form>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button mat-button cdkFocusInitial (click)="onSave()" [disabled]="productForm.invalid">Guardar Producto</button>
+</div>

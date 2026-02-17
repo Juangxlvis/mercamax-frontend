@@ -1,0 +1,76 @@
+<div class="login-container">
+
+  <!-- Login Card -->
+  <div *ngIf="!showTwoFactor" class="login-card">
+    <div class="logo">
+      <img src="assets/images/FORMULARIOS.png" alt="Logotipo del Supermercado">
+    </div>
+    <h2>¡Bienvenido!</h2>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <input id="username" type="text" formControlName="username" placeholder="Ingresa tu usuario" />
+        <div *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched" class="error-message-inline">
+          El usuario es obligatorio.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <input id="password" type="password" formControlName="password" placeholder="Ingresa tu contraseña" />
+        <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="error-message-inline">
+          La contraseña es obligatoria.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <select id="rol" formControlName="rol" [disabled]="loadingRoles || !roles.length">
+          <option value="" disabled selected>Selecciona tu rol</option>
+          <option *ngFor="let r of roles" [value]="r.value">{{ r.view_value }}</option>
+        </select>
+        <div *ngIf="loadingRoles" class="error-message-inline">Cargando roles...</div>
+        <div *ngIf="!loadingRoles && !roles.length" class="error-message-inline">No se pudieron cargar los roles.</div>
+        <div *ngIf="loginForm.get('rol')?.invalid && loginForm.get('rol')?.touched" class="error-message-inline">El rol es obligatorio.</div>
+      </div>
+
+      <div class="forgot-password">
+        <a routerLink="/forgot-password">¿Olvidaste tu contraseña?</a>
+      </div>
+
+      <button type="submit" [disabled]="!loginForm.valid">
+        <span *ngIf="!loading">Ingresar</span>
+        <span *ngIf="loading" class="spinner"></span>
+      </button>
+
+      <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+    </form>
+  </div>
+
+  <!-- 2FA Card -->
+  <div *ngIf="showTwoFactor" class="login-card">
+    <div class="logo">
+      <img src="assets/images/FORMULARIOS.png" alt="Logotipo del Supermercado">
+    </div>
+    <h2>Verificación en dos pasos</h2>
+    <p>Se ha enviado un código de 6 dígitos a tu correo electrónico.</p>
+
+    <form [formGroup]="twoFactorForm" (ngSubmit)="onSubmitTwoFactor()">
+      <div class="form-group">
+        <input id="code" type="text" formControlName="code" placeholder="Ingresa tu código 2FA" />
+        <div *ngIf="twoFactorForm.get('code')?.invalid && twoFactorForm.get('code')?.touched" class="error-message-inline">
+          Ingresa un código válido de 6 dígitos.
+        </div>
+      </div>
+
+      <button type="submit" [disabled]="twoFactorForm.invalid || loading">
+        <span *ngIf="!loading">Verificar Código</span>
+        <span *ngIf="loading" class="spinner"></span>
+      </button>
+
+      <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+    </form>
+    
+    <div class="back-link">
+      <a href="#" (click)="backToLogin()">Volver al inicio de sesión</a>
+    </div>
+  </div>

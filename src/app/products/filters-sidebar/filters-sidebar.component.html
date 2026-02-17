@@ -1,0 +1,35 @@
+<div class="filters-sidebar-container">
+  <div class="filters-header">
+    <h2>Filtros</h2>
+    <button mat-icon-button (click)="closeSidebar.emit()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="filter-section">
+    <h3>Stock</h3>
+    <mat-checkbox [(ngModel)]="currentFilters.stockStatus.outOfStock">Agotado</mat-checkbox>
+    <mat-checkbox [(ngModel)]="currentFilters.stockStatus.minStock">Mínimo</mat-checkbox>
+    <mat-checkbox [(ngModel)]="currentFilters.stockStatus.aboveMin">Arriba del mínimo</mat-checkbox>
+    <mat-checkbox [(ngModel)]="currentFilters.stockStatus.noStockControl">Sin control de stock</mat-checkbox>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="filter-section">
+    <h3>Categorías</h3>
+    <mat-checkbox 
+      *ngFor="let category of availableCategories" 
+      [checked]="currentFilters.categories.includes(category)"
+      (change)="onCategoryChange(category, $event)">
+      {{ category }}
+    </mat-checkbox>
+  </div>
+
+  <div class="filters-actions">
+    <button mat-flat-button (click)="clearFilters()">Limpiar</button>
+    <button mat-flat-button color="primary" (click)="applyFilters()">Filtrar</button>
+  </div>
+</div>

@@ -1,0 +1,27 @@
+<nav>
+  <ul>
+    <!-- Menú principal -->
+    <ng-container *ngFor="let item of menuItems">
+      <li *ngIf="(isVisible(item) | async)">
+        <a class="has-submenu"
+           (click)="$event.stopPropagation(); toggleSubmenu(item.label)"
+           [class.active]="activeSubmenu === item.label">
+          <mat-icon>{{ item.icon }}</mat-icon>
+          {{ item.label }}
+        </a>
+
+        <!-- Submenús -->
+        <ul class="submenu" [ngClass]="{'active': activeSubmenu === item.label}">
+          <ng-container *ngFor="let sub of item.submenu">
+            <li *ngIf="(isVisible(sub) | async)">
+              <a [routerLink]="[sub.path]" routerLinkActive="active">
+                <mat-icon>{{ sub.icon }}</mat-icon>
+                {{ sub.label }}
+              </a>
+            </li>
+          </ng-container>
+        </ul>
+      </li>
+    </ng-container>
+  </ul>
+</nav>

@@ -1,0 +1,212 @@
+/* src/styles.scss */
+
+/* Importa la fuente */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
+
+/* ------------------------------------
+   Variables globales
+------------------------------------ */
+$primary-color: #007bff;
+$hover-color: #e6f7ff;
+$active-border-color: #007bff;
+$text-color-dark: #333;
+$text-color-light: #555;
+$bg-primary: #f0f2f5;
+$bg-white: #ffffff;
+$border-color: #e0e0e0;
+$shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+$banner-height: 77px; 
+$sidebar-width: 250px;
+$sidebar-bg: #27AE60; // Verde principal del sidebar
+$sidebar-hover: #1E8449;
+$sidebar-text: #ecf0f1;
+$active-link-bg: #1E8449;
+$active-link-text: #ffffff;
+
+/* ------------------------------------
+   Estilos generales
+------------------------------------ */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Roboto', sans-serif;
+  background-color: $bg-primary;
+  color: $text-color-dark;
+  overflow-x: hidden;
+}
+
+/* Layout principal */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content-container {
+  display: flex;
+  flex: 1; 
+  padding-top: $banner-height;
+}
+
+.main-content {
+  margin-left: $sidebar-width;
+  padding: 20px;
+  flex: 1;
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+  }
+}
+
+/* ------------------------------------
+   Header
+------------------------------------ */
+app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  
+  header {
+    background-color: $bg-white;
+    padding: 1rem 2rem;
+    box-shadow: $shadow;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid $border-color;
+    height: $banner-height;
+
+    .logo img {
+      width: 250px;
+      height: 45px;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+
+      span {
+        font-weight: bold;
+        color: $text-color-dark;
+        margin-right: 10px;
+      }
+      
+      img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid #ddd;
+      }
+
+      .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: $bg-white;
+        border: 1px solid $border-color;
+        box-shadow: $shadow;
+        min-width: 150px;
+        padding: 5px 0;
+        z-index: 100;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(10px);
+        transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+
+        &.show {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+
+        a {
+          display: block;
+          padding: 10px 15px;
+          color: $text-color-dark;
+          text-decoration: none;
+
+          &:hover {
+            background-color: #f5f5f5;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* ------------------------------------
+   Sidebar
+------------------------------------ */
+app-side-bar {
+  nav {
+    background-color: $sidebar-bg;
+    position: fixed;
+    top: $banner-height;
+    left: 0;
+    height: calc(100vh - #{$banner-height});
+    width: $sidebar-width;
+    padding: 20px 0;
+    z-index: 999;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+
+    @media (max-width: 768px) {
+      left: -#{$sidebar-width};
+      transition: left 0.3s ease-in-out;
+
+      &.active {
+        left: 0;
+      }
+    }
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 20px 0;
+
+      li {
+        a {
+          display: block;
+          color: $sidebar-text;
+          text-decoration: none;
+          padding: 20px 25px;
+          transition: background-color 0.3s ease;
+          border-left: 5px solid transparent; 
+
+          &:hover {
+            background-color: $sidebar-hover;
+            border-left-color: $sidebar-hover;
+          }
+
+          &.active {
+            background-color: $active-link-bg;
+            color: $active-link-text;
+            border-left-color: $active-link-bg;
+            font-weight: bold;
+          }
+        }
+
+        .submenu {
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height 0.3s ease-in-out;
+
+          &.active {
+            max-height: 200px;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* ------------------------------------
+   Estilos extras
+------------------------------------ */
+.custom-dialog-container {
+  border-radius: 10px !important;
+  background-color: #f8f9fa !important;
+}
