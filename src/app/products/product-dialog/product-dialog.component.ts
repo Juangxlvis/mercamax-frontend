@@ -58,34 +58,37 @@ export class ProductDialogComponent implements OnInit{
 
   }
 
-  // Dentro de tu clase ProductDialogComponent
+  // Dentro de clase ProductDialogComponent
 
 onSave(): void {
-    // 1. Creamos un objeto limpio que contiene solo los campos que la API espera.
-    //    Esto evita enviar 'stock' o 'precio_compra'.
-    const productDataToSend = {
-      nombre: this.data.nombre,
-      codigo_barras: this.data.codigo_barras,
-      descripcion: this.data.descripcion,
-      precio_venta: this.data.precio_venta,
-      stock_minimo: this.data.stock_minimo,
-      categoria: this.data.categoria, // El ngModel ya guarda el ID de la categoría
-      proveedor: this.data.proveedor  // El ngModel ya guarda el ID del proveedor
-    };
 
-    // 2. Llamamos al servicio para que envíe los datos al backend.
-    this.productsService.createProduct(productDataToSend).subscribe({
-      next: (response) => {
-        console.log('Producto creado exitosamente:', response);
-        // 3. Cerramos el diálogo y devolvemos el nuevo producto que la API nos retornó.
-        //    Esto permite que la tabla del dashboard se actualice.
-        this.dialogRef.close(response); 
-      },
-      error: (err) => {
-        console.error('Error al crear el producto:', err);
-        // Aquí podrías mostrar un mensaje de error al usuario.
-      }
-    });
+  if (this.data.id) {
+
+    // EDITAR PRODUCTO
+    this.productsService.updateProduct(this.data.id, this.data)
+      .subscribe({
+        next: () => {
+          this.dialogRef.close(true);
+        },
+        error: (err) => {
+          console.error('Error al actualizar producto', err);
+        }
+      });
+
+  } else {
+
+    // CREAR PRODUCTO
+    this.productsService.createProduct(this.data)
+      .subscribe({
+        next: () => {
+          this.dialogRef.close(true);
+        },
+        error: (err) => {
+          console.error('Error al crear producto', err);
+        }
+      });
+
+  }
 }
 
   onCancel(): void {

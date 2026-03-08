@@ -18,7 +18,7 @@ import { Ubicacion } from '../interfaces/ubicacion';
 import { Product } from '../interfaces/producto';
 import { StockItem } from '../interfaces/stock-item';
 
-// ➡️ Importar el componente modal que se creará a continuación
+// Importar el componente modal que se creará a continuación
 import { AjusteInventarioDialogComponent } from '../ajuste-inventario-dialog/ajuste-inventario-dialog.component';
 import { Lote } from '../interfaces/lote';
 import { LoteService } from '../services/lote.service';
@@ -67,7 +67,7 @@ export class AjusteInventarioComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // ➡️ Cargar todas las listas al iniciar
+    // Cargar todas las listas al iniciar
     this.cargarDatosIniciales();
   }
 
@@ -87,10 +87,10 @@ export class AjusteInventarioComponent implements OnInit {
 
   aplicarFiltros(): void {
     this.filteredStockItems = this.stockItems.filter(item => {
-      // ➡️ Lógica para verificar la Ubicación
+      //Lógica para verificar la Ubicación
       const ubicacionMatch = !this.ubicacionSeleccionada || item.ubicacion === this.ubicacionSeleccionada;
 
-      // ➡️ Lógica para verificar el Producto
+      //Lógica para verificar el Producto
       const lote = this.lotes.find(l => l.id === item.lote);
       const productoMatch = !this.productoSeleccionado || (lote && lote.producto === this.productoSeleccionado);
       
@@ -128,7 +128,7 @@ export class AjusteInventarioComponent implements OnInit {
     );
   }
 
-  // ➡️ Métodos auxiliares para la visualización en la tabla
+  // Métodos auxiliares para la visualización en la tabla
   getLote(loteId: number): Lote | undefined {
     return this.lotes.find(l => l.id === loteId);
   }

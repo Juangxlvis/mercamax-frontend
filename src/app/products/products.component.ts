@@ -15,6 +15,9 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { ProductFilters } from './filters-sidebar/filters-sidebar.component';
+
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-products',
@@ -38,6 +41,7 @@ export class ProductsComponent implements OnInit {
   allProducts: Product[] = [];
   filteredProducts: Product[] = [];
   allCategories: CategoriaProducto[] = [];
+  categoryNames: string[] = [];
 
   // --- Propiedades para las Tarjetas de Resumen ---
   stockValue: number = 0;
@@ -66,6 +70,7 @@ export class ProductsComponent implements OnInit {
     this.productsService.getCategories().subscribe({
       next: (categories) => {
         this.allCategories = categories;
+        this.categoryNames = categories.map(c => c.nombre);
         
         // 2. Una vez que tenemos las categorías, cargamos los productos
         this.productsService.getProducts().subscribe({
@@ -89,18 +94,26 @@ export class ProductsComponent implements OnInit {
     });
   }
   
-    // Calcula los valores para las tarjetas de resumen
+  // Calcula los valores para las tarjetas de resumen
   calculateSummaryMetrics(): void {
-    this.stockValue = this.filteredProducts.reduce(
-      (sum, product) => sum + ((product.stock_total || 0) * product.precio_venta), 0
-    );
 
-    this.stockCost = this.filteredProducts.reduce(
-      (sum, product) => sum + ((product.stock_total || 0) * (product.costo_promedio_ponderado || 0)), 0
-    );
+    this.stockValue = 0;
+    this.stockCost = 0;
+
+    this.filteredProducts.forEach(product => {
+
+      const stock = product.stock_total ?? 0;
+      const precio = product.precio_venta ?? 0;
+      const costo = product.costo_promedio_ponderado ?? 0;
+
+      this.stockValue += stock * precio;
+      this.stockCost += stock * costo;
+
+    });
 
     this.estimatedProfit = this.stockValue - this.stockCost;
     this.totalProductsCount = this.filteredProducts.length;
+
   }
 
 
@@ -121,6 +134,7 @@ export class ProductsComponent implements OnInit {
         product.codigo_barras.includes(query)
       );
     }
+    this.calculateSummaryMetrics();
   }
 
   // --- Métodos de Acciones del Usuario ---
@@ -156,28 +170,67 @@ export class ProductsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.snackBar.open('Producto actualizado con éxito.', 'Cerrar', { duration: 3000 });
+        Swal.fire({
+          title: 'Producto actualizado',
+          text: 'El producto fue actualizado correctamente.',
+          icon: 'success',
+          confirmButtonColor: '#00bf63',
+          confirmButtonText: 'Continuar'
+        });
         this.loadInitialData();
       }
     });
   }
 
   // --- Eliminar un producto ---
-  deleteProduct(productId: number | undefined, event: MouseEvent): void {
-    event.stopPropagation();
+deleteProduct(productId: number | undefined, event: MouseEvent): void {
+  event.stopPropagation();
 
-    if (productId && confirm('¿Estás seguro de que quieres eliminar este producto del catálogo?')) {
+  if (!productId) return;
+
+  Swal.fire({
+    title: '¿Eliminar producto?',
+    text: 'Esta acción eliminará el producto del catálogo.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#00bf63',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+
+    if (result.isConfirmed) {
+
       this.productsService.deleteProduct(productId).subscribe({
         next: () => {
-          this.snackBar.open('Producto eliminado con éxito.', 'Cerrar', { duration: 3000 });
+
+          Swal.fire({
+            title: 'Producto eliminado',
+            text: 'El producto fue eliminado correctamente.',
+            icon: 'success',
+            confirmButtonColor: '#00bf63',
+            confirmButtonText: 'Continuar'
+          });
+
           this.loadInitialData();
         },
-        error: (err) => {
-          this.snackBar.open(`Error al eliminar: ${err.message}`, 'Cerrar', { duration: 3000 });
+
+        error: () => {
+
+          Swal.fire({
+            title: 'Error',
+            text: 'No se pudo eliminar el producto.',
+            icon: 'error',
+            confirmButtonColor: '#00bf63'
+          });
+
         }
       });
+
     }
-  }
+
+  });
+}
   
   openFiltersSidebar(): void {
     this.sidenav.open();
@@ -187,8 +240,51 @@ export class ProductsComponent implements OnInit {
     console.log('Exportando productos...');
   }
 
-  applyFilters(filters: any): void {
-    console.log('Filtros avanzados aplicados:', filters);
+  applyFilters(filters: ProductFilters): void {
+
+    this.filteredProducts = this.allProducts.filter(product => {
+
+      const stock = product.stock_total || 0;
+      const minStock = product.stock_minimo || 0;
+
+      let stockMatch = true;
+
+      if (
+        filters.stockStatus.outOfStock ||
+        filters.stockStatus.minStock ||
+        filters.stockStatus.aboveMin
+      ) {
+
+        stockMatch = false;
+
+        if (filters.stockStatus.outOfStock && stock === 0) {
+          stockMatch = true;
+        }
+
+        if (filters.stockStatus.minStock && stock > 0 && stock <= minStock) {
+          stockMatch = true;
+        }
+
+        if (filters.stockStatus.aboveMin && stock > minStock) {
+          stockMatch = true;
+        }
+      }
+
+      let categoryMatch = true;
+
+      if (filters.categories.length > 0) {
+
+        const categoryName = this.getCategoryName(product.categoria);
+
+        categoryMatch = filters.categories.includes(categoryName);
+      }
+
+      return stockMatch && categoryMatch;
+
+    });
+
+    this.calculateSummaryMetrics();
+
     this.sidenav.close();
   }
 }

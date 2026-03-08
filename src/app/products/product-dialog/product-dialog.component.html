@@ -63,5 +63,10 @@
 </div>
 <div mat-dialog-actions>
   <button mat-button (click)="onCancel()">Cancelar</button>
-  <button mat-button cdkFocusInitial (click)="onSave()" [disabled]="productForm.invalid">Guardar Producto</button>
+  <button mat-raised-button
+  color="primary"
+  cdkFocusInitial
+  (click)="onSave()"
+  [disabled]="productForm.invalid">
+  Guardar Producto</button>
 </div>

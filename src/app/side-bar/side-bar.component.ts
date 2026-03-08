@@ -30,9 +30,11 @@ export class SideBarComponent implements OnInit {
       icon: 'inventory',
       submenu: [
         { label: 'Productos', icon: 'inventory_2', path: '/inventario/productos', roles: ['ENCARGADO_INVENTARIO', 'GERENTE_SUPERMERCADO'] },
-        { label: 'Ubicaciones', icon: 'place', path: '/inventario/ubicaciones', roles: ['ENCARGADO_INVENTARIO', 'GERENTE_SUPERMERCADO'] },
-        { label: 'Reportes', icon: 'assessment', path: '/inventario/reportes', roles: ['ENCARGADO_INVENTARIO', 'GERENTE_SUPERMERCADO'] },
-        { label: 'Ajuste de Inventario', icon: 'tune', path: '/inventory/adjust', roles: ['ENCARGADO_INVENTARIO', 'GERENTE_SUPERMERCADO'] }
+        { label: 'Ubicaciones', icon: 'store', path: '/inventario/ubicaciones', roles: ['ENCARGADO_INVENTARIO', 'GERENTE_SUPERMERCADO'] },
+        { label: 'Lotes', icon: 'sell', path: '/inventario/lotes', roles: ['ENCARGADO_INVENTARIO', 'GERENTE_SUPERMERCADO'] },
+        { label: 'Stock', icon: 'storage', path: '/inventario/stock', roles: ['ENCARGADO_INVENTARIO', 'GERENTE_SUPERMERCADO'] },
+        { label: 'Ajuste de Inventario', icon: 'tune', path: '/inventario/ajustes', roles: ['ENCARGADO_INVENTARIO', 'GERENTE_SUPERMERCADO'] },
+        { label: 'Reportes', icon: 'assessment', path: '/inventario/reportes', roles: ['ENCARGADO_INVENTARIO', 'GERENTE_SUPERMERCADO'] }
       ],
       roles: ['ENCARGADO_INVENTARIO', 'GERENTE_SUPERMERCADO']
     },

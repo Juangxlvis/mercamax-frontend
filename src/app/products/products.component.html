@@ -2,6 +2,7 @@
 <mat-sidenav-container class="products-sidenav-container">
   <mat-sidenav #sidenav mode="over" position="end">
     <app-filters-sidebar 
+      [availableCategories]="categoryNames"
       (filtersApplied)="applyFilters($event)" 
       (closeSidebar)="sidenav.close()">
     </app-filters-sidebar>
@@ -85,7 +86,7 @@
               <td>{{ product.codigo_barras }}</td>
               <td>{{ getCategoryName(product.categoria) }}</td>
               <td>
-                <span [ngClass]="{'low-stock': product.stock_total || 0 <= product.stock_minimo}">
+                <span [ngClass]="{'low-stock': (product.stock_total || 0 )<= product.stock_minimo}">
                   {{ product.stock_total }}
                 </span>
               </td>

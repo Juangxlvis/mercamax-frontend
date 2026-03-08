@@ -14,6 +14,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { ResumenStock } from '../interfaces/resumen-stock';
 import { RotacionInventario } from '../interfaces/rotacion-inventario';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-reports',
@@ -38,37 +39,74 @@ export class ReportesComponent implements OnInit {
   rotacionData: RotacionInventario | null = null;
   objetivoRotacion = 6;
 
+  loadingValoracion = false;
+  loadingRotacion = false;
+
   constructor(private reportesService: ReportesService) { }
 
   ngOnInit(): void {
-    // Puedes cargar los reportes al inicio o solo con los botones
-    // this.generarValoracion();
-    // this.calcularRotacion();
+    
   }
 
   generarValoracion(): void {
-    this.reportesService.getValuacionInventario().subscribe(
-      (data: ResumenStock) => {
+
+    this.loadingValoracion = true;
+
+    this.reportesService.getValuacionInventario().subscribe({
+
+      next: (data: ResumenStock) => {
+
         this.valoracionData = data;
+        this.loadingValoracion = false;
+
       },
-      (error) => {
-        console.error('Error al generar el reporte de valoración:', error);
+
+      error: () => {
+
+        this.loadingValoracion = false;
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo generar el reporte de valoración.'
+        });
+
       }
-    );
+
+    });
+
   }
 
   calcularRotacion(): void {
-    this.reportesService.getRotacionInventario().subscribe(
-      (data: RotacionInventario) => {
+
+    this.loadingRotacion = true;
+
+    this.reportesService.getRotacionInventario().subscribe({
+
+      next: (data: RotacionInventario) => {
+
         this.rotacionData = data;
+        this.loadingRotacion = false;
+
       },
-      (error) => {
-        console.error('Error al calcular la rotación:', error);
+
+      error: () => {
+
+        this.loadingRotacion = false;
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo calcular la rotación.'
+        });
+
       }
-    );
+
+    });
+
   }
   
-  // ➡️ Métodos para exportar
+  // Métodos para exportar
   exportarAExcel(): void {
     if (!this.valoracionData || !this.valoracionData.detalles) return;
 
@@ -100,7 +138,7 @@ export class ReportesComponent implements OnInit {
     doc.save('reporte_valoracion_inventario.pdf');
   }
 
-  // ➡️ Getter para la validación del objetivo
+  // Getter para la validación del objetivo
   get rotacionSuperaObjetivo(): boolean {
     if (this.rotacionData && this.rotacionData.rotacion_de_inventario != null) {
     return this.rotacionData.rotacion_de_inventario >= this.objetivoRotacion;

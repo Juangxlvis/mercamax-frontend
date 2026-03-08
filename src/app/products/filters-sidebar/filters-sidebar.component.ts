@@ -1,5 +1,5 @@
 // src/app/products/filters-sidebar/filters-sidebar.component.ts
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, Input} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // Para ngModel en checkboxes
 
@@ -37,6 +37,7 @@ export interface ProductFilters {
 export class FiltersSidebarComponent {
   @Output() filtersApplied = new EventEmitter<ProductFilters>();
   @Output() closeSidebar = new EventEmitter<void>();
+  @Input() availableCategories: string[] = [];
 
   // Estado actual de los filtros
   currentFilters: ProductFilters = {
@@ -49,8 +50,9 @@ export class FiltersSidebarComponent {
     categories: []
   };
 
-  // Opciones de categorías disponibles (esto podría venir del backend)
-  availableCategories: string[] = ['Lácteos', 'Carnes', 'Frutas', 'Verduras', 'Bebidas'];
+  // Opciones de categorías disponibles
+  
+  
 
   // Método para aplicar los filtros
   applyFilters(): void {

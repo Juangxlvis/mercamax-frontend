@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-forgot-password',
@@ -25,7 +26,7 @@ export class ForgotPasswordComponent {
 
     onSubmit() {
   if (this.form.valid) {
-    this.http.post('https://mercamax-backend.onrender.com/api/users/password/reset/', this.form.value)
+    this.http.post(`${environment.apiUrl}/users/password/reset/`, this.form.value)
       .subscribe({
         next: (res: any) => {
           // Mostrar mensaje bonito en lugar de alert()

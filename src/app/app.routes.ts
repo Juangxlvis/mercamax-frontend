@@ -11,6 +11,8 @@ import { ProductsComponent } from './products/products.component';
 import { AjusteInventarioComponent } from './ajuste-inventario/ajuste-inventario.component';
 import { ReportesComponent } from './reportes/reportes.component';
 import { AdminGuard } from './guards/admin.guard';
+import { LotesComponent } from './lotes/lotes.component';
+import { StockComponent } from './stock/stock.component';
 
 export function activateAccountMatcher(segments: UrlSegment[]): UrlMatchResult | null {
     if (segments.length === 3 && segments[0].path === 'activar-cuenta') {
@@ -30,8 +32,14 @@ export function activateAccountMatcher(segments: UrlSegment[]): UrlMatchResult |
 const children: Routes = [
     { path: 'inventario/productos', component: ProductsComponent },
     { path: 'inventario/ubicaciones', component: UbicacionesComponent },
+
+    { path: 'inventario/lotes', component: LotesComponent },
+    { path: 'inventario/stock', component: StockComponent },
+
+    { path: 'inventario/ajustes', component: AjusteInventarioComponent },
     { path: 'inventario/reportes', component: ReportesComponent },
-    { path: 'inventario/ajuste', component: AjusteInventarioComponent },
+
+
     { path: 'admin/invite-user', component: InviteUserComponent, canActivate: [AdminGuard] }
 ];
 

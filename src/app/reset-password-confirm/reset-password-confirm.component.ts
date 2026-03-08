@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-reset-password-confirm',
@@ -62,7 +63,7 @@ export class ResetPasswordConfirmComponent implements OnInit {
       new_password2: this.resetForm.get('new_password2')?.value
     };
 
-    this.http.post(`http://127.0.0.1:8000/api/users/password/reset/confirm/${this.uid}/${this.token}/`, formData)
+    this.http.post(`${environment.apiUrl}/users/password/reset/confirm/${this.uid}/${this.token}/`, formData)
       .subscribe({
         next: (response) => {
           this.isLoading = false;

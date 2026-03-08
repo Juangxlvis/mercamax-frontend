@@ -9,12 +9,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-
 import { UbicacionService } from '../services/ubicacion.service';
 import { CategoriaubicacionService } from '../services/categoriaubicacion.service';
 import { Ubicacion } from '../interfaces/ubicacion';
 import { CategoriaUbicacion } from '../interfaces/categoria-ubicacion';
+
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-ubicaciones',
@@ -28,16 +28,17 @@ import { CategoriaUbicacion } from '../interfaces/categoria-ubicacion';
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule,
-    MatSnackBarModule
+    MatSelectModule
   ],
   templateUrl: './ubicaciones.component.html',
   styleUrls: ['./ubicaciones.component.scss']
 })
 export class UbicacionesComponent implements OnInit {
+
   ubicaciones: Ubicacion[] = [];
   categorias: CategoriaUbicacion[] = [];
   tiposUbicacion: { value: string, label: string }[] = [];
+
   ubicacionForm: Ubicacion = {
     nombre: '',
     tipo: 'BODEGA',
@@ -45,15 +46,24 @@ export class UbicacionesComponent implements OnInit {
     parent: null,
     capacidad_maxima: null
   };
+
   isEditing = false;
   view = 'list';
-  displayedColumns: string[] = ['id', 'nombre', 'tipo', 'categoria_nombre', 'parent_nombre', 'capacidad_maxima', 'acciones'];
+
+  displayedColumns: string[] = [
+    'id',
+    'nombre',
+    'tipo',
+    'categoria_nombre',
+    'parent_nombre',
+    'capacidad_maxima',
+    'acciones'
+  ];
 
   constructor(
     private ubicacionService: UbicacionService,
-    private categoriaService: CategoriaubicacionService,
-    private snackBar: MatSnackBar
-  ) { }
+    private categoriaService: CategoriaubicacionService
+  ) {}
 
   ngOnInit(): void {
     this.loadUbicaciones();
@@ -66,8 +76,13 @@ export class UbicacionesComponent implements OnInit {
       next: (data) => {
         this.ubicaciones = data;
       },
-      error: (err) => {
-        this.snackBar.open(`Error al cargar ubicaciones: ${err.message}`, 'Cerrar', { duration: 3000 });
+      error: () => {
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudieron cargar las ubicaciones.',
+          icon: 'error',
+          confirmButtonColor: '#00bf63'
+        });
       }
     });
   }
@@ -77,8 +92,13 @@ export class UbicacionesComponent implements OnInit {
       next: (data) => {
         this.categorias = data;
       },
-      error: (err) => {
-        this.snackBar.open(`Error al cargar categorías: ${err.message}`, 'Cerrar', { duration: 3000 });
+      error: () => {
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudieron cargar las categorías.',
+          icon: 'error',
+          confirmButtonColor: '#00bf63'
+        });
       }
     });
   }
@@ -88,8 +108,13 @@ export class UbicacionesComponent implements OnInit {
       next: (data) => {
         this.tiposUbicacion = data;
       },
-      error: (err) => {
-        this.snackBar.open(`Error al cargar tipos de ubicación: ${err.message}`, 'Cerrar', { duration: 3000 });
+      error: () => {
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudieron cargar los tipos de ubicación.',
+          icon: 'error',
+          confirmButtonColor: '#00bf63'
+        });
       }
     });
   }
@@ -102,6 +127,7 @@ export class UbicacionesComponent implements OnInit {
       parent: null,
       capacidad_maxima: null
     };
+
     this.isEditing = false;
     this.view = 'form';
   }
@@ -113,8 +139,16 @@ export class UbicacionesComponent implements OnInit {
   }
 
   saveUbicacion(): void {
+
     if (!this.ubicacionForm.nombre || !this.ubicacionForm.tipo) {
-      this.snackBar.open('El nombre y el tipo son obligatorios.', 'Cerrar', { duration: 3000 });
+
+      Swal.fire({
+        title: 'Campos obligatorios',
+        text: 'El nombre y el tipo son obligatorios.',
+        icon: 'warning',
+        confirmButtonColor: '#00bf63'
+      });
+
       return;
     }
 
@@ -123,49 +157,113 @@ export class UbicacionesComponent implements OnInit {
       : this.ubicacionService.create(this.ubicacionForm);
 
     operation.subscribe({
+
       next: () => {
-        this.snackBar.open(`Ubicación ${this.isEditing ? 'actualizada' : 'creada'} con éxito.`, 'Cerrar', { duration: 3000 });
+
+        Swal.fire({
+          title: this.isEditing ? 'Ubicación actualizada' : 'Ubicación creada',
+          text: `La ubicación fue ${this.isEditing ? 'actualizada' : 'creada'} correctamente.`,
+          icon: 'success',
+          confirmButtonColor: '#00bf63',
+          confirmButtonText: 'Continuar'
+        });
+
         this.loadUbicaciones();
         this.view = 'list';
       },
-      error: (err) => {
-        this.snackBar.open(`Error: ${err.message}`, 'Cerrar', { duration: 3000 });
+
+      error: () => {
+
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudo guardar la ubicación.',
+          icon: 'error',
+          confirmButtonColor: '#00bf63'
+        });
+
       }
+
     });
+
   }
 
   deleteUbicacion(id: number | undefined): void {
-    if (id && confirm('¿Estás seguro de eliminar esta ubicación?')) {
-      this.ubicacionService.delete(id).subscribe({
-        next: () => {
-          this.snackBar.open('Ubicación eliminada con éxito.', 'Cerrar', { duration: 3000 });
-          this.loadUbicaciones();
-        },
-        error: (err) => {
-          this.snackBar.open(`Error al eliminar: ${err.message}`, 'Cerrar', { duration: 3000 });
-        }
-      });
-    }
+
+    if (!id) return;
+
+    Swal.fire({
+      title: '¿Eliminar ubicación?',
+      text: 'Esta acción eliminará la ubicación del sistema.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#00bf63',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+
+      if (result.isConfirmed) {
+
+        this.ubicacionService.delete(id).subscribe({
+
+          next: () => {
+
+            Swal.fire({
+              title: 'Ubicación eliminada',
+              text: 'La ubicación fue eliminada correctamente.',
+              icon: 'success',
+              confirmButtonColor: '#00bf63',
+              confirmButtonText: 'Continuar'
+            });
+
+            this.loadUbicaciones();
+          },
+
+          error: () => {
+
+            Swal.fire({
+              title: 'Error',
+              text: 'No se pudo eliminar la ubicación.',
+              icon: 'error',
+              confirmButtonColor: '#00bf63'
+            });
+
+          }
+
+        });
+
+      }
+
+    });
+
   }
 
   getCategoriaNombre(id: number | null): string {
     if (!id) return 'Ninguna';
+
     const categoria = this.categorias.find(cat => cat.id === id);
+
     return categoria ? categoria.nombre : 'Desconocida';
   }
 
   getParentNombre(id: number | null): string {
+
     if (!id) return 'Ninguna';
+
     const parent = this.ubicaciones.find(u => u.id === id);
+
     return parent ? parent.nombre : 'Desconocida';
   }
 
   getUbicacionesPadre(): Ubicacion[] {
     return this.ubicaciones.filter(u => u.tipo === 'BODEGA');
   }
-  
+
   getTipoLabel(tipo: string): string {
+
     const tipoUbicacion = this.tiposUbicacion.find(t => t.value === tipo);
+
     return tipoUbicacion ? tipoUbicacion.label : tipo;
   }
+
 }

@@ -5,6 +5,7 @@ import { Router, RouterLink, RouterModule} from '@angular/router';
 import { AuthService, LoginResponse, TwoFactorResponse } from '../services/auth.service';
 import { HttpClient } from '@angular/common/http';
 import Swal from 'sweetalert2';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -50,7 +51,7 @@ export class LoginComponent implements OnInit{
     }
     cargarRoles(): void{
       this.loadingRoles = true;
-      this.http.get<{ value: string; view_value: string }[]>('https://mercamax-backend.onrender.com/api/users/api/roles/')
+      this.http.get<{ value: string; view_value: string }[]>(`${environment.apiUrl}/users/roles/`)
       .subscribe({
         next: (roles) => {
           console.log('Roles cargados:', roles);

@@ -4,12 +4,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { CategoriaUbicacion } from '../interfaces/categoria-ubicacion';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CategoriaubicacionService {
-  private apiUrl = 'http://localhost:8000/api/bodega/categorias-ubicacion/';
+  //private apiUrl = 'http://localhost:8000/api/bodega/categorias-ubicacion/';
+  private apiUrl = `${environment.apiUrl}/bodega/categorias-ubicacion/`;
 
   constructor(private http: HttpClient) { }
 

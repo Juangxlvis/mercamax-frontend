@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-invite-user',
@@ -30,7 +31,7 @@ export class InviteUserComponent implements OnInit {
   }
 
   loadRoles() {
-    this.http.get<any[]>('http://localhost:8000/api/users/api/roles/').subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/users/roles/`).subscribe({
       next: (data) => {
         this.roles = data;
         this.loadingRoles = false;
@@ -49,14 +50,14 @@ export class InviteUserComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
-    const token = '5341698d83440a4da037d67438ce1d52ad692d9b'; //Token hardcodeado solo para pruebas
+    const token = localStorage.getItem('token');
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': `Token ${token}`
     });
 
-    this.http.post('https://mercamax-backend.onrender.com/api/users/admin/invite/', this.inviteForm.value, { headers })
+    this.http.post(`${environment.apiUrl}/users/admin/invite/`, this.inviteForm.value, { headers })
       .subscribe({
         next: () => {
           this.successMessage = 'Invitación enviada exitosamente ✅';

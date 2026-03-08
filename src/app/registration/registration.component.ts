@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-registration',
@@ -55,7 +56,7 @@ export class RegistrationComponent implements OnInit {
   }
 
   validateToken(): void {
-    const url = `http://127.0.0.1:8000/api/auth/validate-token/`;
+    const url = `${environment.apiUrl}/auth/validate-token/`;
     this.http.post(url, { uid: this.uid, token: this.token }).subscribe({
       next: (response: any) => {
         this.email = response.email;

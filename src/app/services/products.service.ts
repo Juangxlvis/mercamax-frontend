@@ -13,44 +13,47 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class ProductsService {
-  //private apiUrl = 'http://localhost:8000/api/inventario/productos/';
 
-  private apiUrl = environment.apiUrl;
+  private baseUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) { } 
+  private productsUrl = `${this.baseUrl}/inventario/productos/`;
+  private categoriasUrl = `${this.baseUrl}/inventario/categorias/`;
+  private proveedoresUrl = `${this.baseUrl}/inventario/proveedores/`;
+  private estadisticasUrl = `${this.baseUrl}/inventario/estadisticas/`;
+
+  constructor(private http: HttpClient) {}
 
   getCategories() {
-  return this.http.get<{id:number, nombre:string}[]>('https://mercamax-backend.onrender.com/api/inventario/categorias');
+    return this.http.get<{id:number, nombre:string}[]>(this.categoriasUrl);
+  }
+
+getProveedor(): Observable<Proveedor[]> {
+  return this.http.get<Proveedor[]>(
+    `${environment.apiUrl}/inventario/proveedores/`
+  );
 }
-  getProveedor(){
-    return this.http.get<{id:number, nombre:string,contacto_nombre: string,
-      telefono:string,email: string}[]> ('https://mercamax-backend.onrender.com/api/inventario/proveedores')
-  }
-  getEstadisticas(): Observable<any> {
-  return this.http.get<any>('https://mercamax-backend.onrender.com/api/inventario/estadisticas');
-}
-  // C - Create (Crear un nuevo producto)
-  createProduct(product: Product): Observable<Product> {
-    return this.http.post<Product>(this.apiUrl, product);
+
+  getEstadisticas(){
+    return this.http.get(this.estadisticasUrl);
   }
 
-  // R - Read (Leer todos los productos)
-  getProducts(): Observable<Product[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/inventario/productos/`);
-  }
-  
-  // R - Read (Leer un solo producto por ID)
-  getProductById(id: number): Observable<Product> {
-    return this.http.get<Product>(`${this.apiUrl}/${id}/`);
+  getProducts(){
+    return this.http.get<Product[]>(this.productsUrl);
   }
 
-  // U - Update (Actualizar un producto existente)
-  updateProduct(id: number, product: Product): Observable<Product> {
-    return this.http.put<Product>(`${this.apiUrl}/${id}/`, product);
+  createProduct(product: Product){
+    return this.http.post<Product>(this.productsUrl, product);
   }
 
-  // D - Delete (Borrar un producto)
-  deleteProduct(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}/`);
+  getProductById(id:number){
+    return this.http.get<Product>(`${this.productsUrl}${id}/`);
+  }
+
+  updateProduct(id:number, product:Product){
+    return this.http.put<Product>(`${this.productsUrl}${id}/`, product);
+  }
+
+  deleteProduct(id:number){
+    return this.http.delete(`${this.productsUrl}${id}/`);
   }
 }

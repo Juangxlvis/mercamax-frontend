@@ -33,11 +33,12 @@
         <ng-container matColumnDef="acciones">
           <th mat-header-cell *matHeaderCellDef>Acciones</th>
           <td mat-cell *matCellDef="let ubicacion">
-            <button mat-icon-button color="accent" (click)="editUbicacion(ubicacion)">
-              <mat-icon>edit</mat-icon>
+
+            <button class="btn btn-icon" (click)="editUbicacion(ubicacion); $event.stopPropagation()">
+              <i class="fas fa-edit"></i>
             </button>
-            <button mat-icon-button color="warn" (click)="deleteUbicacion(ubicacion.id)">
-              <mat-icon>delete</mat-icon>
+            <button class="btn btn-icon btn-delete" (click)="deleteUbicacion(ubicacion.id); $event.stopPropagation()">
+              <i class="fas fa-trash-alt"></i>
             </button>
           </td>
         </ng-container>

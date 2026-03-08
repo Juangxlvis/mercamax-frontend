@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 export interface User {
   username: string;
@@ -30,7 +31,9 @@ export interface TwoFactorResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8000/api/auth/';
+  //private apiUrl = 'http://localhost:8000/api/auth/';
+  private apiUrl = `${environment.apiUrl}/auth/`;
+
   private userSubject = new BehaviorSubject<User | null>(null);
   user$ = this.userSubject.asObservable();
 

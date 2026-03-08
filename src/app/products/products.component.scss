@@ -2,9 +2,9 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
 
-// Variables de colores (pueden venir de tu `styles.scss` global)
+// Variables de colores 
 $primary-color: #007bff; // Azul (ejemplo)
-$green-primary: #28a745; // El verde de tus botones
+$green-primary: #28a745; // El verde de botones
 $green-dark: #218838;   // Verde más oscuro para hover
 $gray-light: #f8f9fa;
 $gray-medium: #e9ecef;
@@ -48,7 +48,7 @@ $shadow-sm: 0 .125rem .25rem rgba(0,0,0,.075);
     font-size: 1rem;
     &:focus {
       outline: none;
-      border-color: #27AE60;
+      border-color: #1E8449;
     }
   }
 }
@@ -100,7 +100,7 @@ $shadow-sm: 0 .125rem .25rem rgba(0,0,0,.075);
 }
 
 .primary {
-  background-color: #27AE60;
+  background-color: #1E8449;
   color: white;
   border: none;
   &:hover {
@@ -244,7 +244,7 @@ $shadow-sm: 0 .125rem .25rem rgba(0,0,0,.075);
 }
 
 input:checked + .slider {
-  background-color: #27AE60;
+  background-color: #1E8449;
 }
 
 input:checked + .slider:before {

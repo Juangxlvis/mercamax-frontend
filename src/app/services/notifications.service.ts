@@ -1,24 +1,36 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
+
+export interface Notificacion {
+  id: number;
+  mensaje: string;
+  tipo: string;
+  leida: boolean;
+  fecha_creacion: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationsService {
-  private apiUrl = 'tu_api_url_aqui/notifications';
 
-  constructor(private http: HttpClient) { }
+  private apiUrl = `${environment.apiUrl}/notificaciones/`;
 
-  getNotifications(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+  constructor(private http: HttpClient) {}
+
+  getNotifications() {
+    const token = localStorage.getItem('token');
+
+    return this.http.get<any[]>(this.apiUrl, {
+      headers: {
+        Authorization: `Token ${token}`
+      }
+    });
+  }
+  markAllAsRead() {
+    return this.http.post(`${this.apiUrl}/marcar-todas-leidas/`, {});
   }
 
-  markAllAsRead(): Observable<any> {
-    const body = { read: true };
-    return this.http.put(`${this.apiUrl}/mark-all-as-read`, body).pipe(
-      tap(() => console.log('Notificaciones marcadas como leídas en el backend'))
-    );
-  }
 }
