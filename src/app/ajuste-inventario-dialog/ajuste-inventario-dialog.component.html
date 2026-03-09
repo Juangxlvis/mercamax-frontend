@@ -1,1 +1,77 @@
-<p>ajuste-inventario-dialog works!</p>
+<div class="dialog-container">
+
+  <!-- Header -->
+  <div class="dialog-header">
+    <mat-icon>tune</mat-icon>
+    <h2>Ajuste de Inventario</h2>
+  </div>
+
+  <!-- Info del ítem -->
+  <div class="item-info">
+    <div class="info-row">
+      <span class="info-label">Producto:</span>
+      <span class="info-value">{{ data.productoNombre || 'N/A' }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Lote:</span>
+      <span class="info-value">{{ data.loteCodigo || 'N/A' }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Ubicación:</span>
+      <span class="info-value">{{ data.ubicacionNombre || 'N/A' }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Cantidad en sistema:</span>
+      <span class="info-value"><strong>{{ data.cantidadEnSistema }}</strong></span>
+    </div>
+  </div>
+
+  <!-- Formulario -->
+  <div class="dialog-form">
+
+    <!-- Cantidad contada -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Cantidad contada físicamente</mat-label>
+      <input matInput type="number" [(ngModel)]="cantidadContada" min="0" name="cantidad">
+      <mat-icon matSuffix>inventory</mat-icon>
+    </mat-form-field>
+
+    <!-- Diferencia calculada -->
+    <div class="diferencia-badge" [style.border-color]="diferenciaColor">
+      <span class="diferencia-label">Diferencia:</span>
+      <span class="diferencia-valor" [style.color]="diferenciaColor">
+        {{ diferenciaLabel }}
+      </span>
+    </div>
+
+    <!-- Motivo -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Motivo del ajuste</mat-label>
+      <mat-select [(ngModel)]="motivoSeleccionado" name="motivo" required>
+        <mat-option *ngFor="let motivo of motivos" [value]="motivo.value">
+          {{ motivo.label }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Notas -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Notas adicionales (opcional)</mat-label>
+      <textarea matInput [(ngModel)]="notas" name="notas" rows="3"
+                placeholder="Ej: Se encontraron 5 unidades dañadas en el conteo..."></textarea>
+    </mat-form-field>
+
+  </div>
+
+  <!-- Acciones -->
+  <div class="dialog-actions">
+    <button mat-stroked-button (click)="cancelar()">Cancelar</button>
+    <button mat-raised-button color="primary"
+            [disabled]="!motivoSeleccionado || cantidadContada < 0"
+            (click)="confirmar()">
+      <mat-icon>check</mat-icon>
+      Confirmar Ajuste
+    </button>
+  </div>
+
+</div>

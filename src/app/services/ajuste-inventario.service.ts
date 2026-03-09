@@ -1,22 +1,36 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { AjusteInventario } from '../../app/interfaces/ajuste-inventario';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { AjusteInventario } from '../interfaces/ajuste-inventario';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AjusteInventarioService {
-  private apiUrl = 'https://tu-api.com/bodega/inventory/adjust/';
+  private baseUrl = environment.apiUrl;
+  private apiUrl = `${this.baseUrl}/bodega/inventory/adjust/`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  /**
-   * Envía los datos de ajuste a la API
-   * @param ajuste El objeto con la información del conteo físico.
-   * @returns Un Observable con la respuesta de la API.
-   */
   realizarAjuste(ajuste: AjusteInventario): Observable<any> {
-    return this.http.post(this.apiUrl, ajuste);
+    return this.http.post(this.apiUrl, ajuste).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  private handleError(error: any): Observable<never> {
+    let errorMessage = 'Ocurrió un error en la solicitud.';
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = `Error del cliente: ${error.error.message}`;
+    } else {
+      errorMessage =
+        error.error?.detail ||
+        error.error?.error ||
+        error.error?.non_field_errors?.[0] ||
+        `Error ${error.status}: ${error.statusText}`;
+    }
+    return throwError(() => new Error(errorMessage));
   }
 }

@@ -9,10 +9,28 @@
       <img src="assets/images/ALERTAS.png" alt="Notificaciones" class="notification-icon">
       <span class="notification-badge" *ngIf="unreadNotifications > 0">{{ unreadNotifications }}</span>
       <div class="dropdown-menu" [ngClass]="{'show': isNotificationsOpen}">
-        <a *ngIf="notifications.length === 0" class="no-notifications">No tienes notificaciones</a>
+
+        <div class="notifications-header" *ngIf="notifications.length > 0">
+          <span>Notificaciones</span>
+          <a (click)="markAllAsRead()" style="cursor:pointer; font-size:12px; color:#00bf63">
+            Marcar todas como leídas
+          </a>
+        </div>
+
+        <a *ngIf="notifications.length === 0" class="no-notifications">
+          No tienes notificaciones
+        </a>
+
         <ng-container *ngFor="let notif of notifications">
-          <a href="#">{{ notif.message }}</a>
+          <div class="notification-item" [class.unread]="!notif.leida">
+            <span class="notif-icon">{{ notif.tipo === 'STOCK' ? '📦' : '⏰' }}</span>
+            <div class="notif-content">
+              <p>{{ notif.mensaje }}</p>
+              <small>{{ notif.fecha_creacion | date:'dd/MM/yyyy HH:mm' }}</small>
+            </div>
+          </div>
         </ng-container>
+
       </div>
     </div>
     <div class="user-profile">

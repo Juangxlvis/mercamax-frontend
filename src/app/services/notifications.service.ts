@@ -21,16 +21,11 @@ export class NotificationsService {
   constructor(private http: HttpClient) {}
 
   getNotifications() {
-    const token = localStorage.getItem('token');
+    return this.http.get<any[]>(this.apiUrl); // ✅ Sin headers manuales
 
-    return this.http.get<any[]>(this.apiUrl, {
-      headers: {
-        Authorization: `Token ${token}`
-      }
-    });
   }
   markAllAsRead() {
-    return this.http.post(`${this.apiUrl}/marcar-todas-leidas/`, {});
+    return this.http.post(`${this.apiUrl}marcar-todas-leidas/`, {}); // ✅
   }
 
 }

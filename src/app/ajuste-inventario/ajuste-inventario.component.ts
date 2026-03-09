@@ -14,15 +14,16 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AjusteInventarioService } from '../services/ajuste-inventario.service';
 import { UbicacionService } from '../services/ubicacion.service';
 import { ProductsService } from '../services/products.service';
+import { StockItemService } from '../services/stock-item.service';
+import { LoteService } from '../services/lote.service';
+
 import { Ubicacion } from '../interfaces/ubicacion';
 import { Product } from '../interfaces/producto';
 import { StockItem } from '../interfaces/stock-item';
-
-// Importar el componente modal que se creará a continuación
-import { AjusteInventarioDialogComponent } from '../ajuste-inventario-dialog/ajuste-inventario-dialog.component';
 import { Lote } from '../interfaces/lote';
-import { LoteService } from '../services/lote.service';
-import { StockItemService } from '../services/stock-item.service';
+
+import { AjusteInventarioDialogComponent } from '../ajuste-inventario-dialog/ajuste-inventario-dialog.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-ajuste-inventario',
@@ -47,9 +48,9 @@ export class AjusteInventarioComponent implements OnInit {
 
   ubicaciones: Ubicacion[] = [];
   productos: Product[] = [];
-  lotes: Lote[] = []; // Se necesitan para mapear producto y lote
-  stockItems: StockItem[] = []; // La data completa del back
-  filteredStockItems: StockItem[] = []; // La data filtrada para la tabla
+  lotes: Lote[] = [];
+  stockItems: StockItem[] = [];
+  filteredStockItems: StockItem[] = [];
 
   ubicacionSeleccionada: number | null = null;
   productoSeleccionado: number | null = null;
@@ -64,46 +65,60 @@ export class AjusteInventarioComponent implements OnInit {
     private stockItemService: StockItemService,
     private ajusteService: AjusteInventarioService,
     public dialog: MatDialog
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    // Cargar todas las listas al iniciar
     this.cargarDatosIniciales();
   }
 
   cargarDatosIniciales(): void {
     this.isLoading = true;
+
     this.ubicacionService.getAll().subscribe(data => this.ubicaciones = data);
     this.productoService.getProducts().subscribe(data => this.productos = data);
-    //this.loteService.getAll().subscribe(data => this.lotes = data);
 
-    // Cargar todos los StockItems y luego aplicar filtros
-    this.stockItemService.getAll().subscribe(data => {
-      this.stockItems = data;
-      this.aplicarFiltros(); // Aplica filtros iniciales (sin selección)
-      this.isLoading = false;
+    // ✅ Fix: lotes ya se carga correctamente
+    this.loteService.getAll().subscribe(data => this.lotes = data);
+
+    this.stockItemService.getAll().subscribe({
+      next: (data) => {
+        this.stockItems = data;
+        this.aplicarFiltros();
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudo cargar el stock.',
+          icon: 'error',
+          confirmButtonColor: '#00bf63'
+        });
+      }
     });
   }
 
   aplicarFiltros(): void {
     this.filteredStockItems = this.stockItems.filter(item => {
-      //Lógica para verificar la Ubicación
       const ubicacionMatch = !this.ubicacionSeleccionada || item.ubicacion === this.ubicacionSeleccionada;
-
-      //Lógica para verificar el Producto
-      const lote = this.lotes.find(l => l.id === item.lote);
-      const productoMatch = !this.productoSeleccionado || (lote && lote.producto === this.productoSeleccionado);
-      
+      const productoMatch = !this.productoSeleccionado || item.producto_nombre === this.getProductoNombre(this.productoSeleccionado);
       return ubicacionMatch && productoMatch;
     });
   }
 
   abrirFormularioAjuste(stockItem: StockItem): void {
+    const lote = this.lotes.find(l => l.id === stockItem.lote);
+    const ubicacion = this.ubicaciones.find(u => u.id === stockItem.ubicacion);
+
     const dialogRef = this.dialog.open(AjusteInventarioDialogComponent, {
-      width: '400px',
+      width: '480px',
       data: {
         stockItemId: stockItem.id,
-        cantidadEnSistema: stockItem.cantidad
+        cantidadEnSistema: stockItem.cantidad,
+        // ✅ Pasamos nombres legibles al dialog
+        productoNombre: stockItem.producto_nombre || lote?.producto_nombre || 'N/A',
+        loteCodigo: stockItem.lote_codigo || lote?.codigo_lote || 'N/A',
+        ubicacionNombre: stockItem.ubicacion_nombre || ubicacion?.nombre || 'N/A'
       }
     });
 
@@ -115,32 +130,52 @@ export class AjusteInventarioComponent implements OnInit {
   }
 
   realizarAjuste(ajusteData: any): void {
-    this.ajusteService.realizarAjuste(ajusteData).subscribe(
-      response => {
-        console.log('Ajuste exitoso:', response);
-        alert('Ajuste de inventario realizado con éxito.');
-        this.cargarDatosIniciales(); // Recargar los datos para ver los cambios
+    this.ajusteService.realizarAjuste(ajusteData).subscribe({
+      next: () => {
+        Swal.fire({
+          title: 'Ajuste realizado',
+          text: 'El inventario fue ajustado correctamente.',
+          icon: 'success',
+          confirmButtonColor: '#00bf63',
+          confirmButtonText: 'Continuar'
+        });
+        this.cargarDatosIniciales();
       },
-      error => {
-        console.error('Error al realizar el ajuste:', error);
-        alert('Error al realizar el ajuste. Por favor, intente de nuevo.');
+      error: (err) => {
+        Swal.fire({
+          title: 'Error al ajustar',
+          text: err.message || 'No se pudo realizar el ajuste.',
+          icon: 'error',
+          confirmButtonColor: '#00bf63'
+        });
       }
-    );
+    });
   }
 
-  // Métodos auxiliares para la visualización en la tabla
-  getLote(loteId: number): Lote | undefined {
-    return this.lotes.find(l => l.id === loteId);
+  // Helpers para filtros
+  getProductoNombre(id: number): string {
+    const producto = this.productos.find(p => p.id === id);
+    return producto ? producto.nombre : '';
   }
 
-  
-  getProducto(productoId: number | undefined): Product | undefined {
-    if (productoId !== undefined) {
-        return this.productos.find(p => p.id === productoId);
-    }
-    return undefined;
-}
-  getUbicacion(ubicacionId: number): Ubicacion | undefined {
-    return this.ubicaciones.find(u => u.id === ubicacionId);
+  // Helpers para la tabla (fallback si el backend no trae los campos de solo lectura)
+  getLoteInfo(stockItem: StockItem): string {
+    if (stockItem.lote_codigo) return stockItem.lote_codigo;
+    const lote = this.lotes.find(l => l.id === stockItem.lote);
+    return lote?.codigo_lote || 'N/A';
+  }
+
+  getProductoInfo(stockItem: StockItem): string {
+    if (stockItem.producto_nombre) return stockItem.producto_nombre;
+    const lote = this.lotes.find(l => l.id === stockItem.lote);
+    if (!lote) return 'N/A';
+    const producto = this.productos.find(p => p.id === lote.producto);
+    return producto?.nombre || 'N/A';
+  }
+
+  getUbicacionInfo(stockItem: StockItem): string {
+    if (stockItem.ubicacion_nombre) return stockItem.ubicacion_nombre;
+    const ubi = this.ubicaciones.find(u => u.id === stockItem.ubicacion);
+    return ubi?.nombre || 'N/A';
   }
 }
