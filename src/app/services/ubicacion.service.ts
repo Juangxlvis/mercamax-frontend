@@ -8,8 +8,8 @@ import { catchError } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class UbicacionService {
- private apiUrl = 'http://localhost:8000/api/bodega/ubicaciones/';
- private tiposUrl = 'http://localhost:8000/api/bodega/tipos-ubicacion/';
+ private apiUrl = 'https://mercamax-backend-b8vu.onrender.com/api/bodega/ubicaciones/';
+ private tiposUrl = 'https://mercamax-backend-b8vu.onrender.com/api/bodega/tipos-ubicacion/';
 
   constructor(private http: HttpClient) { }
 
@@ -48,7 +48,7 @@ export class UbicacionService {
       catchError(this.handleError)
     );
   }
-  
+
   private handleError(error: any): Observable<never> {
     let errorMessage = 'Ocurrió un error en la solicitud.';
     if (error.error instanceof ErrorEvent) {

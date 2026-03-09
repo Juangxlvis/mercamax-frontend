@@ -1,53 +1,59 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Lote } from '../../app/interfaces/lote';
+import { Injectable } from '@angular/core';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { Lote } from '../interfaces/lote';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoteService {
-  private apiUrl = 'https://tu-api.com/bodega/lotes/'; // ➡️ Endpoint real de tu API
+  private baseUrl = environment.apiUrl;
+  private apiUrl = `${this.baseUrl}/bodega/lotes/`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  /**
-   * Obtiene todos los lotes del backend.
-   * Corresponde al endpoint GET /bodega/lotes/.
-   * @returns Un Observable con la lista de lotes.
-   */
   getAll(): Observable<Lote[]> {
-    return this.http.get<Lote[]>(this.apiUrl);
+    return this.http.get<Lote[]>(this.apiUrl).pipe(
+      catchError(this.handleError)
+    );
   }
 
-  /**
-   * Crea un nuevo lote.
-   * Corresponde al endpoint POST /bodega/lotes/.
-   * @param lote El objeto Lote a crear.
-   * @returns Un Observable con el lote creado.
-   */
+  getById(id: number): Observable<Lote> {
+    return this.http.get<Lote>(`${this.apiUrl}${id}/`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   create(lote: Lote): Observable<Lote> {
-    return this.http.post<Lote>(this.apiUrl, lote);
+    return this.http.post<Lote>(this.apiUrl, lote).pipe(
+      catchError(this.handleError)
+    );
   }
 
-  /**
-   * Actualiza un lote existente.
-   * Corresponde al endpoint PUT /bodega/lotes/{id}/.
-   * @param id El ID del lote a actualizar.
-   * @param lote El objeto Lote con los datos actualizados.
-   * @returns Un Observable con el lote actualizado.
-   */
   update(id: number, lote: Lote): Observable<Lote> {
-    return this.http.put<Lote>(`${this.apiUrl}${id}/`, lote);
+    return this.http.put<Lote>(`${this.apiUrl}${id}/`, lote).pipe(
+      catchError(this.handleError)
+    );
   }
 
-  /**
-   * Elimina un lote por su ID.
-   * Corresponde al endpoint DELETE /bodega/lotes/{id}/.
-   * @param id El ID del lote a eliminar.
-   * @returns Un Observable con la respuesta de la eliminación.
-   */
   delete(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}${id}/`);
+    return this.http.delete(`${this.apiUrl}${id}/`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  private handleError(error: any): Observable<never> {
+    let errorMessage = 'Ocurrió un error en la solicitud.';
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = `Error del cliente: ${error.error.message}`;
+    } else {
+      errorMessage =
+        error.error?.detail ||
+        error.error?.non_field_errors?.[0] ||
+        `Error ${error.status}: ${error.statusText}`;
+    }
+    return throwError(() => new Error(errorMessage));
   }
 }

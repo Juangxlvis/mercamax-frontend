@@ -1,53 +1,53 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { StockItem } from '../../app/interfaces/stock-item'; 
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { StockItem } from '../interfaces/stock-item';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StockItemService {
-  private apiUrl = 'https://tu-api.com/bodega/stockitems/'; // ➡️ Endpoint real de tu API
+  private baseUrl = environment.apiUrl;
+  private apiUrl = `${this.baseUrl}/bodega/stockitems/`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  /**
-   * Obtiene todos los ítems de stock del inventario físico.
-   * Corresponde al endpoint GET /bodega/stockitems/.
-   * @returns Un Observable con la lista de StockItem.
-   */
   getAll(): Observable<StockItem[]> {
-    return this.http.get<StockItem[]>(this.apiUrl);
+    return this.http.get<StockItem[]>(this.apiUrl).pipe(
+      catchError(this.handleError)
+    );
   }
 
-  /**
-   * Asigna una cantidad de un lote a un estante.
-   * Corresponde al endpoint POST /bodega/stockitems/.
-   * @param stockItem El objeto StockItem a crear.
-   * @returns Un Observable con el ítem de stock creado.
-   */
   create(stockItem: StockItem): Observable<StockItem> {
-    return this.http.post<StockItem>(this.apiUrl, stockItem);
+    return this.http.post<StockItem>(this.apiUrl, stockItem).pipe(
+      catchError(this.handleError)
+    );
   }
 
-  /**
-   * Actualiza la cantidad de un StockItem existente.
-   * Corresponde al endpoint PUT /bodega/stockitems/{id}/.
-   * @param id El ID del StockItem a actualizar.
-   * @param stockItem El objeto StockItem con la cantidad actualizada.
-   * @returns Un Observable con el ítem de stock actualizado.
-   */
   update(id: number, stockItem: StockItem): Observable<StockItem> {
-    return this.http.put<StockItem>(`${this.apiUrl}${id}/`, stockItem);
+    return this.http.put<StockItem>(`${this.apiUrl}${id}/`, stockItem).pipe(
+      catchError(this.handleError)
+    );
   }
 
-  /**
-   * Elimina un StockItem de una ubicación.
-   * Corresponde al endpoint DELETE /bodega/stockitems/{id}/.
-   * @param id El ID del StockItem a remover.
-   * @returns Un Observable con la respuesta de la eliminación.
-   */
   delete(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}${id}/`);
+    return this.http.delete(`${this.apiUrl}${id}/`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  private handleError(error: any): Observable<never> {
+    let errorMessage = 'Ocurrió un error en la solicitud.';
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = `Error del cliente: ${error.error.message}`;
+    } else {
+      errorMessage =
+        error.error?.detail ||
+        error.error?.non_field_errors?.[0] ||
+        `Error ${error.status}: ${error.statusText}`;
+    }
+    return throwError(() => new Error(errorMessage));
   }
 }

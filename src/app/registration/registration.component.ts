@@ -9,7 +9,7 @@ import { environment } from '../../environments/environment';
 @Component({
   selector: 'app-registration',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule], 
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './registration.component.html',
   styleUrls: ['./registration.component.scss']
 })
@@ -85,12 +85,12 @@ export class RegistrationComponent implements OnInit {
       password2: this.registrationForm.get('password2')?.value,
     };
 
-    this.http.post('http://127.0.0.1:8000/api/users/complete-registration/', formData)
+    this.http.post('https://mercamax-backend-b8vu.onrender.com/api/users/complete-registration/', formData)
       .subscribe({
         next: (response: any) => {
           this.isLoading = false;
           this.successMessage = response.detail || 'Usuario registrado exitosamente.';
-          
+
           console.log('Usuario registrado exitosamente:', response);
             setTimeout(() => {
               this.router.navigate(['/login']);

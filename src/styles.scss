@@ -16,7 +16,7 @@ $bg-white: #ffffff;
 $border-color: #e0e0e0;
 $shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
-$banner-height: 77px; 
+$banner-height: 77px;
 $sidebar-width: 250px;
 $sidebar-bg: #27AE60; // Verde principal del sidebar
 $sidebar-hover: #1E8449;
@@ -46,7 +46,7 @@ html, body {
 
 .content-container {
   display: flex;
-  flex: 1; 
+  flex: 1;
   padding-top: $banner-height;
 }
 
@@ -69,7 +69,7 @@ app-header {
   left: 0;
   width: 100%;
   z-index: 1000;
-  
+
   header {
     background-color: $bg-white;
     padding: 1rem 2rem;
@@ -94,7 +94,7 @@ app-header {
         color: $text-color-dark;
         margin-right: 10px;
       }
-      
+
       img {
         width: 40px;
         height: 40px;
@@ -174,7 +174,7 @@ app-side-bar {
           text-decoration: none;
           padding: 20px 25px;
           transition: background-color 0.3s ease;
-          border-left: 5px solid transparent; 
+          border-left: 5px solid transparent;
 
           &:hover {
             background-color: $sidebar-hover;
@@ -195,7 +195,7 @@ app-side-bar {
           transition: max-height 0.3s ease-in-out;
 
           &.active {
-            max-height: 200px;
+            max-height: 500px;
           }
         }
       }

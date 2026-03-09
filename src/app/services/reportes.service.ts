@@ -3,12 +3,15 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { RotacionInventario } from '../../app/interfaces/rotacion-inventario';
 import { ResumenStock } from '../../app/interfaces/resumen-stock';
+import {environment} from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ReportesService {
-private apiUrl = 'https://tu-api.com/bodega/reports';
+
+  private baseUrl = environment.apiUrl;
+  private apiUrl = `${this.baseUrl}/bodega/reports`;
 
   constructor(private http: HttpClient) { }
 
