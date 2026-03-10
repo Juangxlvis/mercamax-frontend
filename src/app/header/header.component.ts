@@ -166,4 +166,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     this.isDropdownOpen = false;
   }
+
+  deleteNotification(event: Event, id: number): void {
+    event.stopPropagation(); // Evita que cierre el dropdown
+    this.notificationsService.deleteNotification(id).subscribe({
+      next: () => {
+        this.notifications = this.notifications.filter(n => n.id !== id);
+        this.updateUnreadCount();
+      },
+      error: () => console.error('Error al eliminar notificación')
+    });
+  }
 }

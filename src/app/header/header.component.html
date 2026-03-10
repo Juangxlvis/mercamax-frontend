@@ -10,29 +10,33 @@
       <span class="notification-badge" *ngIf="unreadNotifications > 0">{{ unreadNotifications }}</span>
       <div class="dropdown-menu" [ngClass]="{'show': isNotificationsOpen}">
 
-        <div class="notifications-header" *ngIf="notifications.length > 0">
+        <div class="notifications-header">
           <span>Notificaciones</span>
-          <a (click)="markAllAsRead()" style="cursor:pointer; font-size:12px; color:#00bf63">
+          <a (click)="markAllAsRead()" *ngIf="unreadNotifications > 0">
             Marcar todas como leídas
           </a>
         </div>
 
-        <a *ngIf="notifications.length === 0" class="no-notifications">
-          No tienes notificaciones
-        </a>
+        <div class="notifications-list">
+          <a *ngIf="notifications.length === 0" class="no-notifications">
+            No tienes notificaciones
+          </a>
 
-        <ng-container *ngFor="let notif of notifications">
-          <div class="notification-item" [class.unread]="!notif.leida">
-            <span class="notif-icon">{{ notif.tipo === 'STOCK' ? '📦' : '⏰' }}</span>
-            <div class="notif-content">
-              <p>{{ notif.mensaje }}</p>
-              <small>{{ notif.fecha_creacion | date:'dd/MM/yyyy HH:mm' }}</small>
+          <ng-container *ngFor="let notif of notifications">
+            <div class="notification-item" [class.unread]="!notif.leida">
+              <span class="notif-icon">{{ notif.tipo === 'STOCK' ? '📦' : '⏰' }}</span>
+              <div class="notif-content">
+                <p>{{ notif.mensaje }}</p>
+                <small>{{ notif.fecha_creacion | date:'dd/MM/yyyy HH:mm' }}</small>
+              </div>
+              <button class="notif-delete" (click)="deleteNotification($event, notif.id)">✕</button>
             </div>
-          </div>
-        </ng-container>
+          </ng-container>
+        </div>
 
       </div>
     </div>
+
     <div class="user-profile">
       <span>¡Hola, {{ userName }}!</span>
       <div class="profile-dropdown" (click)="toggleDropdown()">
@@ -42,6 +46,7 @@
         </div>
       </div>
     </div>
+
     <button class="menu-toggle" (click)="toggleSidebar()">
       <i class="fas fa-bars"></i>
     </button>

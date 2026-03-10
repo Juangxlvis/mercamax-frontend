@@ -21,11 +21,13 @@ export class NotificationsService {
   constructor(private http: HttpClient) {}
 
   getNotifications() {
-    return this.http.get<any[]>(this.apiUrl); // ✅ Sin headers manuales
+    return this.http.get<any[]>(this.apiUrl);
 
   }
   markAllAsRead() {
-    return this.http.post(`${this.apiUrl}marcar-todas-leidas/`, {}); // ✅
+    return this.http.post(`${this.apiUrl}marcar-todas-leidas/`, {});
   }
-
+  deleteNotification(id: number) {
+    return this.http.delete(`${this.apiUrl}${id}/eliminar/`);
+  }
 }
