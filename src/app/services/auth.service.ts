@@ -37,12 +37,25 @@ export class AuthService {
   private userSubject = new BehaviorSubject<User | null>(null);
   user$ = this.userSubject.asObservable();
 
+  private sessionTimeout: any;
+  private readonly TIMEOUT_MS = 30 * 60 * 1000;
+
   constructor(private http: HttpClient, private router: Router) {
+
     // Cargar usuario desde localStorage al inicializar
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       this.userSubject.next(JSON.parse(storedUser));
+
+      this.resetSessionTimer();
     }
+  }
+
+  resetSessionTimer(): void {
+    if (this.sessionTimeout) clearTimeout(this.sessionTimeout);
+    this.sessionTimeout = setTimeout(() => {
+      this.logout();
+    }, this.TIMEOUT_MS);
   }
 
   login(credentials: { username: string, password: string }): Observable<LoginResponse> {
@@ -57,6 +70,7 @@ export class AuthService {
           };
           localStorage.setItem('user', JSON.stringify(user));
           this.userSubject.next(user);
+          this.resetSessionTimer();
         }
       }),
       catchError(this.handleError)
@@ -78,6 +92,8 @@ export class AuthService {
           };
           localStorage.setItem('user', JSON.stringify(user));
           this.userSubject.next(user);
+          this.resetSessionTimer();
+
         }
       }),
       catchError(this.handleError)
