@@ -1,7 +1,7 @@
 // src/app/products/products.component.ts
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common'; 
-import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 // Interfaces y Servicios
 import { Product } from '../interfaces/producto';
@@ -65,13 +65,13 @@ export class ProductsComponent implements OnInit {
 
   loadInitialData(): void {
     this.isLoading = true;
-    
+
     // 1. Cargar las categorías primero para poder usarlas en la tabla
     this.productsService.getCategories().subscribe({
       next: (categories) => {
         this.allCategories = categories;
         this.categoryNames = categories.map(c => c.nombre);
-        
+
         // 2. Una vez que tenemos las categorías, cargamos los productos
         this.productsService.getProducts().subscribe({
           next: (products) => {
@@ -93,7 +93,7 @@ export class ProductsComponent implements OnInit {
       }
     });
   }
-  
+
   // Calcula los valores para las tarjetas de resumen
   calculateSummaryMetrics(): void {
 
@@ -142,7 +142,7 @@ export class ProductsComponent implements OnInit {
   openCreateProductDialog(): void {
     const dialogRef = this.dialog.open(ProductDialogComponent, {
       width: '600px',
-      data: {} 
+      data: {}
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -151,7 +151,7 @@ export class ProductsComponent implements OnInit {
       }
     });
   }
-  
+
   viewProduct(productId?: number): void {
     if (productId) {
       console.log(`Navegando al detalle del producto con ID: ${productId}`);
@@ -193,8 +193,8 @@ deleteProduct(productId: number | undefined, event: MouseEvent): void {
     text: 'Esta acción eliminará el producto del catálogo.',
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonColor: '#00bf63',
-    cancelButtonColor: '#d33',
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#6c757d',
     confirmButtonText: 'Sí, eliminar',
     cancelButtonText: 'Cancelar'
   }).then((result) => {
@@ -215,13 +215,19 @@ deleteProduct(productId: number | undefined, event: MouseEvent): void {
           this.loadInitialData();
         },
 
-        error: () => {
+        error: (err) => {
+          let errorMessage = 'Hubo un problema al intentar eliminar el producto.';
 
+          // Verificamos si Django nos mandó el {"error": "No se puede eliminar..."}
+          if (err.error && err.error.error) {
+            errorMessage = err.error.error;
+          }
           Swal.fire({
-            title: 'Error',
-            text: 'No se pudo eliminar el producto.',
+            title: 'Acción Denegada',
+            text: errorMessage,
             icon: 'error',
-            confirmButtonColor: '#00bf63'
+            confirmButtonColor: '#00bf63',
+            confirmButtonText: 'Entendido'
           });
 
         }
@@ -231,7 +237,7 @@ deleteProduct(productId: number | undefined, event: MouseEvent): void {
 
   });
 }
-  
+
   openFiltersSidebar(): void {
     this.sidenav.open();
   }
