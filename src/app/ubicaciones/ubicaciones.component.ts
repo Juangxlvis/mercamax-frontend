@@ -196,8 +196,8 @@ export class UbicacionesComponent implements OnInit {
       text: 'Esta acción eliminará la ubicación del sistema.',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#00bf63',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
@@ -219,13 +219,18 @@ export class UbicacionesComponent implements OnInit {
             this.loadUbicaciones();
           },
 
-          error: () => {
+          error: (err) => {
+            let errorMessage = 'Hubo un problema al intentar eliminar la Ubicación.';
 
+            if (err.error && err.error.error) {
+              errorMessage = err.error.error;
+            }
             Swal.fire({
-              title: 'Error',
-              text: 'No se pudo eliminar la ubicación.',
+              title: 'Acción Denegada',
+              text: errorMessage,
               icon: 'error',
-              confirmButtonColor: '#00bf63'
+              confirmButtonColor: '#d33',
+              confirmButtonText: 'Entendido'
             });
 
           }

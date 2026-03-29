@@ -157,8 +157,8 @@ export class StockComponent implements OnInit {
       text: 'Se eliminará la asignación de este lote en esta ubicación.',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#00bf63',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
       confirmButtonText: 'Sí, retirar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
@@ -169,16 +169,23 @@ export class StockComponent implements OnInit {
               title: 'Stock retirado',
               text: 'La asignación fue eliminada correctamente.',
               icon: 'success',
-              confirmButtonColor: '#00bf63'
+              confirmButtonColor: '#00bf63',
+              confirmButtonText: 'Continuar'
             });
             this.loadStock();
           },
           error: (err) => {
+            let errorMessage = 'Hubo un problema al intentar eliminar el StockItem.';
+
+            if (err.error && err.error.error) {
+              errorMessage = err.error.error;
+            }
             Swal.fire({
               title: 'Error',
-              text: err.message || 'No se pudo eliminar el stock.',
+              text: errorMessage,
               icon: 'error',
-              confirmButtonColor: '#00bf63'
+              confirmButtonColor: '#d33',
+              confirmButtonText: 'Entendido'
             });
           }
         });

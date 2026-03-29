@@ -163,8 +163,8 @@ export class LotesComponent implements OnInit {
       text: 'Esta acción eliminará el lote del sistema.',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#00bf63',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
@@ -180,12 +180,19 @@ export class LotesComponent implements OnInit {
             });
             this.loadLotes();
           },
-          error: () => {
+          error: (err) => {
+
+            let errorMessage = 'Hubo un problema al intentar eliminar el lote.';
+
+            if (err.error && err.error.error) {
+              errorMessage = err.error.error;
+            }
             Swal.fire({
-              title: 'Error',
-              text: 'No se pudo eliminar el lote.',
+              title: 'Acción Denegada',
+              text: errorMessage,
               icon: 'error',
-              confirmButtonColor: '#00bf63'
+              confirmButtonColor: '#d33',
+              confirmButtonText: 'Entendido'
             });
           }
         });
