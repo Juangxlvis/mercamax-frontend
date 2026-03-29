@@ -182,7 +182,7 @@ export class LotesComponent implements OnInit {
           },
           error: (err) => {
 
-            let errorMessage = 'Hubo un problema al intentar eliminar el lote.';
+            let errorMessage = 'Hubo un problema al intentar eliminar el lote, ya que tiene stock asignado.';
 
             if (err.error && err.error.error) {
               errorMessage = err.error.error;

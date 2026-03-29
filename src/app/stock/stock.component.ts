@@ -175,7 +175,7 @@ export class StockComponent implements OnInit {
             this.loadStock();
           },
           error: (err) => {
-            let errorMessage = 'Hubo un problema al intentar eliminar el StockItem.';
+            let errorMessage = 'Hubo un problema al intentar eliminar el StockItem, ya que tiene ajustes de inventario asociados.';
 
             if (err.error && err.error.error) {
               errorMessage = err.error.error;

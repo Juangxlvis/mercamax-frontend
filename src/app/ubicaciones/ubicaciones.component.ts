@@ -220,7 +220,7 @@ export class UbicacionesComponent implements OnInit {
           },
 
           error: (err) => {
-            let errorMessage = 'Hubo un problema al intentar eliminar la Ubicación.';
+            let errorMessage = 'Hubo un problema al intentar eliminar la ubicación, ya que tiene productos(Stock) asignados.';
 
             if (err.error && err.error.error) {
               errorMessage = err.error.error;

@@ -218,7 +218,6 @@ deleteProduct(productId: number | undefined, event: MouseEvent): void {
         error: (err) => {
           let errorMessage = 'Hubo un problema al intentar eliminar el producto.';
 
-          // Verificamos si Django nos mandó el {"error": "No se puede eliminar..."}
           if (err.error && err.error.error) {
             errorMessage = err.error.error;
           }
@@ -243,7 +242,40 @@ deleteProduct(productId: number | undefined, event: MouseEvent): void {
   }
 
   exportProducts(): void {
-    console.log('Exportando productos...');
+    // 1. Verificamos que haya productos para exportar
+    if (this.filteredProducts.length === 0) {
+      Swal.fire('Advertencia', 'No hay productos para exportar.', 'warning');
+      return;
+    }
+
+    // 2. Definimos las cabeceras del archivo CSV
+    const header = ['ID', 'Nombre', 'Código de Barras', 'Categoría', 'Precio Venta', 'Costo Promedio', 'Stock Total'];
+
+    // 3. Mapeamos los datos de los productos al formato de filas
+    const rows = this.filteredProducts.map(product => [
+      product.id,
+      `"${product.nombre}"`, // Comillas para evitar problemas si el nombre tiene comas
+      `"${product.codigo_barras}"`,
+      `"${this.getCategoryName(product.categoria)}"`,
+      product.precio_venta,
+      product.costo_promedio_ponderado || 0,
+      product.stock_total || 0
+    ]);
+
+    // 4. Unimos las cabeceras y las filas con saltos de línea (\n) y comas
+    const csvContent = [header, ...rows].map(e => e.join(",")).join("\n");
+
+    // 5. Creamos un "Blob" (un archivo en memoria) con el contenido CSV
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    // 6. Creamos un enlace invisible, le hacemos clic automáticamente y lo borramos
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `mercamax_productos_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   applyFilters(filters: ProductFilters): void {
