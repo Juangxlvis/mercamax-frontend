@@ -18,6 +18,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ProductFilters } from './filters-sidebar/filters-sidebar.component';
 
 import Swal from 'sweetalert2';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-products',
@@ -242,40 +243,46 @@ deleteProduct(productId: number | undefined, event: MouseEvent): void {
   }
 
   exportProducts(): void {
-    // 1. Verificamos que haya productos para exportar
     if (this.filteredProducts.length === 0) {
       Swal.fire('Advertencia', 'No hay productos para exportar.', 'warning');
       return;
     }
 
-    // 2. Definimos las cabeceras del archivo CSV
-    const header = ['ID', 'Nombre', 'Código de Barras', 'Categoría', 'Precio Venta', 'Costo Promedio', 'Stock Total'];
+    // 1. Mapeamos los datos para crear objetos limpios (Las llaves serán los encabezados de Excel)
+    const dataToExport = this.filteredProducts.map(product => ({
+      'ID': product.id,
+      'Nombre del Producto': product.nombre,
+      'Código de Barras': product.codigo_barras,
+      'Categoría': this.getCategoryName(product.categoria),
+      'Precio de Venta ($)': product.precio_venta,
+      'Costo Promedio ($)': product.costo_promedio_ponderado || 0,
+      'Stock Total': product.stock_total || 0
+    }));
 
-    // 3. Mapeamos los datos de los productos al formato de filas
-    const rows = this.filteredProducts.map(product => [
-      product.id,
-      `"${product.nombre}"`, // Comillas para evitar problemas si el nombre tiene comas
-      `"${product.codigo_barras}"`,
-      `"${this.getCategoryName(product.categoria)}"`,
-      product.precio_venta,
-      product.costo_promedio_ponderado || 0,
-      product.stock_total || 0
-    ]);
+    // 2. Convertimos el JSON a una Hoja de Trabajo de Excel (Worksheet)
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(dataToExport);
 
-    // 4. Unimos las cabeceras y las filas con saltos de línea (\n) y comas
-    const csvContent = [header, ...rows].map(e => e.join(",")).join("\n");
+    // 3. Toque Profesional: Ajustamos el ancho de las columnas automáticamente
+    const columnWidths = [
+      { wch: 10 }, // Ancho para ID
+      { wch: 40 }, // Ancho para Nombre
+      { wch: 20 }, // Ancho para Código
+      { wch: 25 }, // Ancho para Categoría
+      { wch: 18 }, // Ancho para Precio
+      { wch: 18 }, // Ancho para Costo
+      { wch: 15 }  // Ancho para Stock
+    ];
+    worksheet['!cols'] = columnWidths;
 
-    // 5. Creamos un "Blob" (un archivo en memoria) con el contenido CSV
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
+    // 4. Creamos el Libro de Trabajo (Workbook) y le añadimos nuestra hoja
+    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Inventario MercaMax');
 
-    // 6. Creamos un enlace invisible, le hacemos clic automáticamente y lo borramos
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `mercamax_productos_${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // 5. Generamos y descargamos el archivo nativo .xlsx (¡Adiós a los problemas de tildes!)
+    const dateStr = new Date().toISOString().slice(0, 10);
+    const fileName = `Reporte_Inventario_MercaMax_${dateStr}.xlsx`;
+
+    XLSX.writeFile(workbook, fileName);
   }
 
   applyFilters(filters: ProductFilters): void {
