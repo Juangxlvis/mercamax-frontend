@@ -85,7 +85,7 @@ export class RegistrationComponent implements OnInit {
       password2: this.registrationForm.get('password2')?.value,
     };
 
-    this.http.post('https://mercamax-backend-b8vu.onrender.com/api/users/complete-registration/', formData)
+    this.http.post(`${environment.apiUrl}/users/complete-registration/`, formData)
       .subscribe({
         next: (response: any) => {
           this.isLoading = false;

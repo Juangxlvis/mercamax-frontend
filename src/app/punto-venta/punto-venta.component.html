@@ -1,0 +1,216 @@
+<!-- src/app/punto-venta/punto-venta.component.html -->
+<div class="pv-container">
+
+  <!-- COLUMNA IZQUIERDA -->
+  <div class="pv-left">
+
+    <!-- Buscador productos -->
+    <div class="pv-card">
+      <h3 class="pv-title"><i class="fas fa-search"></i> Buscar Producto</h3>
+      <div class="search-box">
+        <input type="text" [(ngModel)]="queryProducto" (input)="onQueryProductoChange()"
+               placeholder="Nombre o código de barras..." class="search-input" />
+        <span class="search-icon"><i class="fas fa-barcode"></i></span>
+      </div>
+
+      <div class="search-results" *ngIf="resultadosProducto.length > 0">
+        <div class="result-item" *ngFor="let p of resultadosProducto" (click)="agregarAlCarrito(p)">
+          <div class="result-info">
+            <span class="result-nombre">{{ p.producto_nombre }}</span>
+            <span class="result-codigo">{{ p.codigo_barras }}</span>
+            <span class="result-ubicacion">📍 {{ p.ubicacion }}</span>
+          </div>
+          <div class="result-precio">
+            <span class="precio">{{ fmt(+p.precio_venta) }}</span>
+            <span class="iva-tag" *ngIf="+p.porcentaje_iva > 0">IVA {{ p.porcentaje_iva }}%</span>
+            <span class="iva-tag exento" *ngIf="+p.porcentaje_iva === 0">Exento</span>
+            <span class="stock" [class.stock-bajo]="p.stock_disponible <= 5">
+              Stock: {{ p.stock_disponible }}
+            </span>
+            <button class="btn-agregar">+ Agregar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="no-results" *ngIf="queryProducto.length >= 2 && resultadosProducto.length === 0 && !buscandoProducto">
+        <i class="fas fa-box-open"></i><p>No se encontraron productos</p>
+      </div>
+      <div class="buscando" *ngIf="buscandoProducto"><p>Buscando...</p></div>
+    </div>
+
+    <!-- Cliente -->
+    <div class="pv-card">
+      <h3 class="pv-title"><i class="fas fa-user"></i> Cliente</h3>
+
+      <div class="cliente-seleccionado" *ngIf="clienteSeleccionado">
+        <div class="cliente-info">
+          <span class="cliente-nombre">{{ clienteSeleccionado.nombre }}</span>
+          <span class="cliente-doc">{{ clienteSeleccionado.tipo_documento }}: {{ clienteSeleccionado.numero_documento }}</span>
+        </div>
+        <button class="btn-quitar" (click)="quitarCliente()">✕</button>
+      </div>
+
+      <div *ngIf="!clienteSeleccionado">
+        <div class="cliente-opciones">
+          <button class="btn-cliente" [class.active]="mostrarBuscadorCliente"
+                  (click)="mostrarBuscadorCliente = !mostrarBuscadorCliente; busquedaClienteRealizada = false; resultadosCliente = []">
+            <i class="fas fa-search"></i> Buscar cliente
+          </button>
+          <span class="o-text">o</span>
+          <span class="anonimo-badge"><i class="fas fa-user-slash"></i> Venta anónima</span>
+        </div>
+
+        <div *ngIf="mostrarBuscadorCliente" style="margin-top:10px">
+          <div class="search-box">
+            <input type="text" [(ngModel)]="queryCliente" (input)="onQueryClienteChange()"
+                   placeholder="Nombre o número de documento..." class="search-input" />
+          </div>
+          <div class="search-results" *ngIf="resultadosCliente.length > 0">
+            <div class="result-item" *ngFor="let c of resultadosCliente" (click)="seleccionarCliente(c)">
+              <div class="result-info">
+                <span class="result-nombre">{{ c.nombre }}</span>
+                <span class="result-codigo">{{ c.tipo_documento }}: {{ c.numero_documento }}</span>
+              </div>
+              <span class="result-seleccionar">Seleccionar →</span>
+            </div>
+          </div>
+          <div class="no-cliente" *ngIf="busquedaClienteRealizada && resultadosCliente.length === 0 && queryCliente.length >= 2">
+            <i class="fas fa-user-times"></i>
+            <p>No se encontró ningún cliente</p>
+            <button class="btn-crear-cliente" (click)="abrirPanelNuevoCliente()">
+              <i class="fas fa-user-plus"></i> Crear nuevo cliente
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Método de pago -->
+    <div class="pv-card">
+      <h3 class="pv-title"><i class="fas fa-credit-card"></i> Pago</h3>
+      <div class="form-group">
+        <label>Método de Pago <span class="req">*</span></label>
+        <select [(ngModel)]="metodoPago" class="form-control">
+          <option *ngFor="let m of metodosPago" [value]="m.value">{{ m.label }}</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-top:12px">
+        <label>Notas <span class="opcional">(opcional)</span></label>
+        <input type="text" [(ngModel)]="notas" placeholder="Ej: cambio de $20.000..." class="form-control" />
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COLUMNA DERECHA: Carrito -->
+  <div class="pv-right">
+    <div class="pv-card carrito-card">
+      <h3 class="pv-title">
+        <i class="fas fa-shopping-cart"></i> Carrito
+        <span class="carrito-count" *ngIf="carrito.length > 0">{{ carrito.length }}</span>
+      </h3>
+
+      <div class="carrito-vacio" *ngIf="carrito.length === 0">
+        <i class="fas fa-cart-plus"></i>
+        <p>El carrito está vacío</p>
+        <span>Busca y agrega productos</span>
+      </div>
+
+      <div class="carrito-items" *ngIf="carrito.length > 0">
+        <div class="carrito-item" *ngFor="let item of carrito">
+          <div class="item-info">
+            <span class="item-nombre">{{ item.producto_nombre }}</span>
+            <div class="item-meta">
+              <span class="item-precio">{{ fmt(item.precio_venta) }} c/u</span>
+              <span class="item-iva-tag" *ngIf="item.porcentaje_iva > 0">IVA {{ item.porcentaje_iva }}%</span>
+              <span class="item-iva-exento" *ngIf="item.porcentaje_iva === 0">Exento</span>
+            </div>
+          </div>
+          <div class="item-controles">
+            <button class="btn-cantidad" (click)="cambiarCantidad(item, -1)">−</button>
+            <span class="cantidad">{{ item.cantidad }}</span>
+            <button class="btn-cantidad" (click)="cambiarCantidad(item, 1)">+</button>
+            <div class="item-totales">
+              <span class="item-subtotal">{{ fmt(item.total_linea) }}</span>
+              <span class="item-impuesto" *ngIf="item.impuesto > 0">+{{ fmt(item.impuesto) }} IVA</span>
+            </div>
+            <button class="btn-eliminar" (click)="eliminarDelCarrito(item)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desglose totales -->
+      <div class="totales-desglose" *ngIf="carrito.length > 0">
+        <div class="total-linea">
+          <span>Subtotal (sin IVA)</span>
+          <span>{{ fmt(subtotalCarrito) }}</span>
+        </div>
+        <div class="total-linea iva-linea" *ngIf="hayImpuestos">
+          <span>Total Impuestos (IVA)</span>
+          <span>{{ fmt(impuestosCarrito) }}</span>
+        </div>
+        <div class="total-linea iva-exento-row" *ngIf="!hayImpuestos">
+          <span>IVA</span>
+          <span class="exento-badge">Todos exentos</span>
+        </div>
+        <div class="total-linea total-final">
+          <span>TOTAL A PAGAR</span>
+          <span>{{ fmt(totalCarrito) }}</span>
+        </div>
+
+        <button class="btn-confirmar" (click)="confirmarVenta()" [disabled]="procesandoVenta">
+          <i class="fas fa-check-circle"></i>
+          {{ procesandoVenta ? 'Procesando...' : 'Confirmar Venta' }}
+        </button>
+        <button class="btn-limpiar" (click)="limpiarVenta()">
+          <i class="fas fa-times"></i> Limpiar carrito
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Panel deslizante nuevo cliente -->
+<div class="panel-overlay" *ngIf="mostrarPanelCliente" (click)="cerrarPanelCliente()"></div>
+<div class="panel-slide" [class.open]="mostrarPanelCliente">
+  <div class="panel-header">
+    <div><h3>Nuevo Cliente</h3><p>Registro rápido desde caja</p></div>
+    <button class="panel-close" (click)="cerrarPanelCliente()">✕</button>
+  </div>
+  <div class="panel-body">
+    <div class="form-group">
+      <label>Tipo de Documento <span class="req">*</span></label>
+      <select [(ngModel)]="nuevoCliente.tipo_documento" class="form-control">
+        <option value="CC">Cédula de Ciudadanía</option>
+        <option value="NIT">NIT</option>
+        <option value="CE">Cédula de Extranjería</option>
+        <option value="PAS">Pasaporte</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Número de Documento <span class="req">*</span></label>
+      <input type="text" [(ngModel)]="nuevoCliente.numero_documento" class="form-control" />
+    </div>
+    <div class="form-group">
+      <label>Nombre completo <span class="req">*</span></label>
+      <input type="text" [(ngModel)]="nuevoCliente.nombre" class="form-control" />
+    </div>
+    <div class="form-group">
+      <label>Teléfono <span class="opcional">(opcional)</span></label>
+      <input type="text" [(ngModel)]="nuevoCliente.telefono" class="form-control" />
+    </div>
+    <div class="form-group">
+      <label>Email <span class="opcional">(opcional)</span></label>
+      <input type="email" [(ngModel)]="nuevoCliente.email" class="form-control" />
+    </div>
+  </div>
+  <div class="panel-footer">
+    <button class="btn-cancelar" (click)="cerrarPanelCliente()" [disabled]="guardandoCliente">Cancelar</button>
+    <button class="btn-guardar" (click)="guardarNuevoCliente()" [disabled]="guardandoCliente">
+      <i class="fas fa-save"></i> {{ guardandoCliente ? 'Guardando...' : 'Guardar y Seleccionar' }}
+    </button>
+  </div>
+</div>

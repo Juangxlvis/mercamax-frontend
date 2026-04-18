@@ -3,13 +3,15 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { Ubicacion } from '../../app/interfaces/ubicacion';
 import { catchError } from 'rxjs/operators';
+import {environment} from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UbicacionService {
- private apiUrl = 'https://mercamax-backend-b8vu.onrender.com/api/bodega/ubicaciones/';
- private tiposUrl = 'https://mercamax-backend-b8vu.onrender.com/api/bodega/tipos-ubicacion/';
+  private baseUrl = environment.apiUrl;
+  private apiUrl = `${this.baseUrl}/bodega/ubicaciones/`;
+ private tiposUrl = `${this.baseUrl}/bodega/tipos-ubicacion/`;
 
   constructor(private http: HttpClient) { }
 

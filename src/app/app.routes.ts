@@ -13,6 +13,9 @@ import { ReportesComponent } from './reportes/reportes.component';
 import { AdminGuard } from './guards/admin.guard';
 import { LotesComponent } from './lotes/lotes.component';
 import { StockComponent } from './stock/stock.component';
+import { PuntoVentaComponent } from './punto-venta/punto-venta.component';
+import { HistorialVentasComponent } from './historial-ventas/historial-ventas.component';
+import { AuthGuard } from './guards/auth.guard';
 
 export function activateAccountMatcher(segments: UrlSegment[]): UrlMatchResult | null {
     if (segments.length === 3 && segments[0].path === 'activar-cuenta') {
@@ -30,17 +33,15 @@ export function activateAccountMatcher(segments: UrlSegment[]): UrlMatchResult |
 }
 
 const children: Routes = [
-    { path: 'inventario/productos', component: ProductsComponent },
-    { path: 'inventario/ubicaciones', component: UbicacionesComponent },
-
-    { path: 'inventario/lotes', component: LotesComponent },
-    { path: 'inventario/stock', component: StockComponent },
-
-    { path: 'inventario/ajustes', component: AjusteInventarioComponent },
-    { path: 'inventario/reportes', component: ReportesComponent },
-
-
-    { path: 'admin/invite-user', component: InviteUserComponent, canActivate: [AdminGuard] }
+  { path: 'inventario/productos', component: ProductsComponent, canActivate: [AuthGuard] },
+  { path: 'inventario/ubicaciones', component: UbicacionesComponent, canActivate: [AuthGuard] },
+  { path: 'inventario/lotes', component: LotesComponent, canActivate: [AuthGuard] },
+  { path: 'inventario/stock', component: StockComponent, canActivate: [AuthGuard] },
+  { path: 'inventario/ajustes', component: AjusteInventarioComponent, canActivate: [AuthGuard] },
+  { path: 'inventario/reportes', component: ReportesComponent, canActivate: [AuthGuard] },
+  { path: 'ventas/punto-venta', component: PuntoVentaComponent, canActivate: [AuthGuard] },
+  { path: 'ventas/historial', component: HistorialVentasComponent, canActivate: [AuthGuard] },
+  { path: 'admin/invite-user', component: InviteUserComponent, canActivate: [AdminGuard] }
 ];
 
 export const routes: Routes = [

@@ -1,7 +1,7 @@
 // src/app/products/product-dialog/product-dialog.component.ts
 import { Component, Inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; 
-import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Product } from '../../interfaces/producto';
 import { ProductsService } from '../../services/products.service';
 
@@ -43,9 +43,14 @@ export class ProductDialogComponent implements OnInit{
   constructor(
     public dialogRef: MatDialogRef<ProductDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: Product,
-    private productsService: ProductsService) {}
-    
-  
+    private productsService: ProductsService
+  ) {
+    if (this.data.porcentaje_iva === undefined || this.data.porcentaje_iva === null) {
+      this.data.porcentaje_iva = 0;
+    }
+  }
+
+
 
   ngOnInit(): void {
     this.productsService.getCategories().subscribe(data => {
