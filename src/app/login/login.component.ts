@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common'; 
+import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterModule} from '@angular/router';
 import { AuthService, LoginResponse, TwoFactorResponse } from '../services/auth.service';
 import { HttpClient } from '@angular/common/http';
@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit{
   errorMessage = '';
   loading = false;
   loadingRoles = true;
-  showTwoFactor = false; 
+  showTwoFactor = false;
   tempToken: string | null = null;
 
   constructor(
@@ -70,27 +70,44 @@ export class LoginComponent implements OnInit{
         }
       });
   }
-    onSubmit(): void{
+  onSubmit(): void {
     if (!this.loginForm.valid) return;
-      this.loading = true;
+    this.loading = true;
 
-      this.authService.login(this.loginForm.value).subscribe({
-        next: (response:LoginResponse) => {
-          if(response.step === '2fa_required'){
-            this.tempToken = response.token || null; 
-            this.showTwoFactor = true;
-          } else if (response.token){
-            localStorage.setItem('auth_token', response.token);
-            this.router.navigate(['/inventario/productos']);
-          }
-          this.loading = false;
-        },
-        error: (error) => {
-          this.errorMessage = error.error?.non_field_errors?.[0] || 'Error en el login.';
-          this.loading = false;
-        },
-      });
-    }
+    this.authService.login(this.loginForm.value).subscribe({
+      next: (response: LoginResponse) => {
+        if (response.step === '2fa_required') {
+          this.tempToken = response.token || null;
+          this.showTwoFactor = true;
+        } else if (response.token) {
+          localStorage.setItem('auth_token', response.token);
+          const user = JSON.parse(localStorage.getItem('user') || '{}');
+          this.redirigirSegunRol(user.rol);
+        }
+        this.loading = false;
+      },
+      error: (error) => {
+        const status = error.status;
+        const detail = error.error?.non_field_errors?.[0]
+          || error.error?.detail
+          || '';
+
+        if (status === 429 || detail.toLowerCase().includes('bloqueado') || detail.toLowerCase().includes('locked')) {
+          this.errorMessage = 'Cuenta bloqueada temporalmente por múltiples intentos fallidos. Intenta de nuevo en 1 hora.';
+        } else if (detail.includes('rol')) {
+          this.errorMessage = 'El rol seleccionado no corresponde a este usuario. Verifica tu rol e intenta de nuevo.';
+        } else if (status === 400) {
+          this.errorMessage = 'Usuario o contraseña incorrectos. Verifica tus datos e intenta de nuevo.';
+        } else if (status === 0 || status >= 500) {
+          this.errorMessage = 'Error de conexión con el servidor. Intenta más tarde.';
+        } else {
+          this.errorMessage = 'No se pudo iniciar sesión. Verifica tus datos.';
+        }
+
+        this.loading = false;
+      }
+    });
+  }
 
   onSubmitTwoFactor(): void {
     if (this.twoFactorForm.valid && this.tempToken) {
@@ -108,7 +125,7 @@ export class LoginComponent implements OnInit{
             confirmButtonText: 'Continuar'
           }).then(() => {
             localStorage.setItem('auth_token', response.token);
-            this.router.navigate(['/inventario/productos']);
+            this.redirigirSegunRol(response.rol);
           });
           this.loading = false;
         },
@@ -125,4 +142,16 @@ export class LoginComponent implements OnInit{
     this.twoFactorForm.reset();
     this.errorMessage = '';
   }
+
+  // Método helper para redirigir según rol
+  private redirigirSegunRol(rol: string): void {
+    const rutas: Record<string, string> = {
+      'ENCARGADO_INVENTARIO':  '/inventario/productos',
+      'GERENTE_SUPERMERCADO':  '/inventario/productos',
+      'CAJERO':                '/ventas/punto-venta',
+      'GERENTE_COMPRAS':       '/compras/bienvenida',  // placeholder por ahora
+    };
+    this.router.navigate([rutas[rol] || '/inventario/productos']);
+  }
 }
+

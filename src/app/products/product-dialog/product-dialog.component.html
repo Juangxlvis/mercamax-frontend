@@ -43,6 +43,16 @@
     </mat-form-field>
 
     <mat-form-field appearance="fill">
+      <mat-label>IVA (%)</mat-label>
+      <mat-select [(ngModel)]="data.porcentaje_iva" name="porcentaje_iva">
+        <mat-option [value]="0">0% — Exento (alimentos básicos)</mat-option>
+        <mat-option [value]="5">5% — Tarifa reducida</mat-option>
+        <mat-option [value]="19">19% — Tarifa general (aseo, dulces, etc.)</mat-option>
+      </mat-select>
+      <mat-hint>Productos de la canasta básica son exentos de IVA</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
       <mat-label>Stock Mínimo (Punto de Reorden)</mat-label>
       <input matInput type="number" [(ngModel)]="data.stock_minimo" name="stock_minimo" required min="0" #stockMinimoField="ngModel">
       <mat-error *ngIf="stockMinimoField.invalid && stockMinimoField.touched">

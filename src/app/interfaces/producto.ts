@@ -9,9 +9,10 @@ export interface Product {
   descripcion: string;
   precio_venta: number;
   stock_minimo: number;
+  porcentaje_iva?: number;
 
   // Los campos de relación ahora guardan el ID (un número)
-  categoria: number; 
+  categoria: number;
   proveedor: number;
 
   // Los nuevos campos calculados que envía el backend

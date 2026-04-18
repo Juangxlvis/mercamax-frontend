@@ -1,0 +1,195 @@
+<!-- src/app/historial-ventas/historial-ventas.component.html -->
+<div class="historial-container">
+
+  <div class="historial-header">
+    <h2><i class="fas fa-receipt"></i> Historial de Ventas</h2>
+    <button class="btn-refresh" (click)="cargarVentas()">
+      <i class="fas fa-sync-alt"></i> Actualizar
+    </button>
+  </div>
+
+  <!-- Cargando -->
+  <div class="loading" *ngIf="cargando">
+    <i class="fas fa-spinner fa-spin"></i>
+    <p>Cargando ventas...</p>
+  </div>
+
+  <!-- Tabla de ventas -->
+  <div class="tabla-container" *ngIf="!cargando">
+
+    <table class="tabla-ventas" *ngIf="ventas.length > 0">
+      <thead>
+      <tr>
+        <th>Factura</th>
+        <th>Fecha</th>
+        <th>Cajero</th>
+        <th>Cliente</th>
+        <th>Método Pago</th>
+        <th>Total</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let venta of ventas" [class.anulada]="venta.estado === 'ANULADA'">
+        <td><strong>{{ venta.factura?.numero_factura || '—' }}</strong></td>
+        <td>{{ formatearFecha(venta.fecha_hora) }}</td>
+        <td>{{ venta.cajero_nombre }}</td>
+        <td>{{ venta.cliente_nombre || 'Anónimo' }}</td>
+        <td>
+          <span class="metodo-badge">{{ getLabelMetodoPago(venta.metodo_pago) }}</span>
+        </td>
+        <td class="total-cell">{{ fmt(venta.total) }}</td>
+        <td>
+            <span class="badge"
+                  [class.badge-completada]="venta.estado === 'COMPLETADA'"
+                  [class.badge-anulada]="venta.estado === 'ANULADA'">
+              {{ venta.estado }}
+            </span>
+        </td>
+        <td class="acciones">
+          <!-- Ver detalle -->
+          <button class="btn-accion btn-ver" (click)="verDetalle(venta)" title="Ver detalle">
+            <i class="fas fa-eye"></i>
+          </button>
+          <!-- Descargar PDF -->
+          <button
+            class="btn-accion btn-pdf"
+            (click)="descargarPdf(venta, $event)"
+            title="Descargar factura PDF"
+            [disabled]="descargando">
+            <i class="fas fa-file-pdf"></i>
+          </button>
+          <!-- Anular (solo gerente) -->
+          <button
+            class="btn-accion btn-anular"
+            *ngIf="esGerente && venta.estado === 'COMPLETADA'"
+            (click)="anularVenta(venta)"
+            title="Anular venta">
+            <i class="fas fa-ban"></i>
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+    <div class="sin-ventas" *ngIf="ventas.length === 0">
+      <i class="fas fa-receipt"></i>
+      <p>No hay ventas registradas aún</p>
+    </div>
+
+  </div>
+
+  <!-- ── Modal detalle de venta ────────────────────────────── -->
+  <div class="modal-overlay" *ngIf="ventaSeleccionada" (click)="cerrarDetalle()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <div>
+          <h3>{{ ventaSeleccionada.factura?.numero_factura }}</h3>
+          <span class="badge"
+                [class.badge-completada]="ventaSeleccionada.estado === 'COMPLETADA'"
+                [class.badge-anulada]="ventaSeleccionada.estado === 'ANULADA'">
+            {{ ventaSeleccionada.estado }}
+          </span>
+        </div>
+        <button class="btn-cerrar" (click)="cerrarDetalle()">✕</button>
+      </div>
+
+      <!-- Info general -->
+      <div class="modal-info">
+        <div class="info-row">
+          <span class="info-label">Fecha</span>
+          <span>{{ formatearFecha(ventaSeleccionada.fecha_hora) }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Cajero</span>
+          <span>{{ ventaSeleccionada.cajero_nombre }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Cliente</span>
+          <span>{{ ventaSeleccionada.cliente_nombre || 'Anónimo' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Método de Pago</span>
+          <span>{{ getLabelMetodoPago(ventaSeleccionada.metodo_pago) }}</span>
+        </div>
+        <div class="info-row" *ngIf="ventaSeleccionada.notas">
+          <span class="info-label">Notas</span>
+          <span>{{ ventaSeleccionada.notas }}</span>
+        </div>
+      </div>
+
+      <!-- Tabla de productos con IVA por línea -->
+      <table class="tabla-detalles">
+        <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Cant.</th>
+          <th>Precio Unit.</th>
+          <th>IVA%</th>
+          <th>Impuesto</th>
+          <th>Total Línea</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let detalle of ventaSeleccionada.detalles">
+          <td>{{ detalle.producto_nombre }}</td>
+          <td>{{ detalle.cantidad }}</td>
+          <td>{{ fmt(detalle.precio_unitario) }}</td>
+          <td>
+              <span class="iva-chip" *ngIf="+detalle.porcentaje_iva > 0">
+                {{ detalle.porcentaje_iva }}%
+              </span>
+            <span class="iva-chip exento" *ngIf="+detalle.porcentaje_iva === 0">
+                Exento
+              </span>
+          </td>
+          <td class="impuesto-cell">{{ fmt(detalle.impuesto) }}</td>
+          <td class="total-linea-cell"><strong>{{ fmt(detalle.total_linea) }}</strong></td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr class="tfoot-subtotal">
+          <td colspan="5" class="foot-label">Subtotal (sin IVA)</td>
+          <td class="foot-valor">{{ fmt(ventaSeleccionada.subtotal) }}</td>
+        </tr>
+        <tr class="tfoot-iva" *ngIf="tieneIva(ventaSeleccionada)">
+          <td colspan="5" class="foot-label">Total Impuestos (IVA)</td>
+          <td class="foot-valor iva-valor">{{ fmt(ventaSeleccionada.total_impuestos) }}</td>
+        </tr>
+        <tr class="tfoot-iva" *ngIf="!tieneIva(ventaSeleccionada)">
+          <td colspan="5" class="foot-label">IVA</td>
+          <td class="foot-valor"><span class="exento-badge">Exento</span></td>
+        </tr>
+        <tr class="tfoot-total">
+          <td colspan="5" class="foot-label">TOTAL A PAGAR</td>
+          <td class="foot-valor total-grande">{{ fmt(ventaSeleccionada.total) }}</td>
+        </tr>
+        </tfoot>
+      </table>
+
+      <!-- Footer del modal -->
+      <div class="modal-footer">
+        <!-- Descargar PDF -->
+        <button
+          class="btn-pdf-modal"
+          (click)="descargarPdf(ventaSeleccionada)"
+          [disabled]="descargando">
+          <i class="fas fa-file-pdf"></i>
+          {{ descargando ? 'Descargando...' : 'Descargar PDF' }}
+        </button>
+        <!-- Anular (solo gerente) -->
+        <button
+          class="btn-anular-modal"
+          *ngIf="esGerente && ventaSeleccionada.estado === 'COMPLETADA'"
+          (click)="anularVenta(ventaSeleccionada)">
+          <i class="fas fa-ban"></i> Anular Venta
+        </button>
+        <button class="btn-cerrar-modal" (click)="cerrarDetalle()">Cerrar</button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

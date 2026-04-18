@@ -128,12 +128,6 @@ export class AuthService {
   }
 
   private handleError(error: any): Observable<never> {
-    let errorMessage = 'Ocurrió un error en la solicitud.';
-    if (error.error instanceof ErrorEvent) {
-      errorMessage = `Error del cliente: ${error.error.message}`;
-    } else {
-      errorMessage = error.error?.detail || error.error?.non_field_errors?.[0] || `Error ${error.status}: ${error.statusText}`;
-    }
-    return throwError(() => new Error(errorMessage));
+    return throwError(() => error);
   }
 }
