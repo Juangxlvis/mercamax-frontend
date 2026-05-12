@@ -22,6 +22,8 @@ export class FacturasComprasComponent implements OnInit {
   cargando = false;
   procesando = false;
   mostrarModalPago = false;
+  mostrarModalDetalle = false;
+  facturaDetalle: FacturaProveedor | null = null;
 
   // Pago
   pagoMonto = 0;
@@ -68,6 +70,16 @@ export class FacturasComprasComponent implements OnInit {
     this.mostrarModalPago = false;
     this.facturaSeleccionada = null;
   }
+
+  verDetalle(factura: FacturaProveedor): void {
+  this.facturaDetalle = factura;
+  this.mostrarModalDetalle = true;
+}
+
+  cerrarDetalle(): void {
+  this.mostrarModalDetalle = false;
+  this.facturaDetalle = null;
+}
 
   registrarPago(): void {
     if (!this.pagoMonto || !this.pagoComprobante) {

@@ -49,6 +49,9 @@
                   (click)="abrirPago(f)" title="Registrar pago">
             <i class="fas fa-dollar-sign"></i> Pagar
           </button>
+          <button class="btn-detalle" (click)="verDetalle(f)" title="Ver detalle">
+            <i class="fas fa-eye"></i>
+          </button>
           <span class="pagado-completo" *ngIf="f.estado === 'PAGADA'">
               <i class="fas fa-check-circle"></i> Pagada
             </span>
@@ -122,5 +125,69 @@
       </button>
     </div>
   </div>
+
+  <!-- Modal detalle factura -->
+<div class="modal-overlay" *ngIf="mostrarModalDetalle" (click)="cerrarDetalle()"></div>
+<div class="modal-card" *ngIf="mostrarModalDetalle && facturaDetalle">
+  <div class="modal-header">
+    <div>
+      <h3>Detalle de Factura</h3>
+      <p>{{ facturaDetalle.numero_factura }} · {{ facturaDetalle.proveedor_nombre }}</p>
+    </div>
+    <button class="btn-cerrar" (click)="cerrarDetalle()">✕</button>
+  </div>
+
+  <div class="modal-body">
+    <div class="saldo-info">
+      <div class="saldo-item">
+        <span>Total factura</span>
+        <strong>{{ fmt(facturaDetalle.monto_total) }}</strong>
+      </div>
+      <div class="saldo-item">
+        <span>Ya pagado</span>
+        <strong class="pagado">{{ fmt(facturaDetalle.monto_pagado) }}</strong>
+      </div>
+      <div class="saldo-item">
+        <span>Pendiente</span>
+        <strong [style.color]="facturaDetalle.estado === 'PAGADA' ? '#27AE60' : '#e74c3c'">
+          {{ facturaDetalle.estado === 'PAGADA' ? '—' : fmt(facturaDetalle.monto_pendiente) }}
+        </strong>
+      </div>
+    </div>
+
+    <h4 style="font-size:14px; font-weight:600; margin: 16px 0 8px 0; color:#333;">
+      Pagos registrados
+    </h4>
+
+    <table class="tabla-pagos" *ngIf="facturaDetalle.pagos.length > 0">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Monto</th>
+          <th>Método</th>
+          <th>Comprobante</th>
+          <th>Registrado por</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let pago of facturaDetalle.pagos">
+          <td>{{ formatearFecha(pago.fecha_pago) }}</td>
+          <td class="pagado">{{ fmt(pago.monto) }}</td>
+          <td>{{ pago.metodo_pago }}</td>
+          <td>{{ pago.numero_comprobante }}</td>
+          <td>{{ pago.registrado_por_nombre }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="facturaDetalle.pagos.length === 0" style="text-align:center; color:#aaa; padding:20px;">
+      <i class="fas fa-info-circle"></i> Sin pagos registrados aún
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn-cancelar-modal" (click)="cerrarDetalle()">Cerrar</button>
+  </div>
+</div>
 
 </div>
