@@ -14,12 +14,12 @@
     background: white; border: 1.5px solid #e0e0e0; border-radius: 8px;
     padding: 8px 16px; font-size: 13px; cursor: pointer;
     display: flex; align-items: center; gap: 6px;
-    &:hover { border-color: #1a56db; color: #1a56db; }
+    &:hover { border-color: #00bf63; color: #00bf63; }
   }
 }
 
 .loading {
-  text-align: center; padding: 40px; color: #1a56db;
+  text-align: center; padding: 40px; color: #00bf63;
   i { font-size: 28px; margin-bottom: 8px; display: block; }
 }
 
@@ -42,10 +42,10 @@
   .pendiente { color: #e74c3c; font-weight: 600; }
   .sin-pendiente { color: #888; }
   .btn-pago {
-    background: #1a56db; color: white; border: none; border-radius: 6px;
+    background: #00bf63; color: white; border: none; border-radius: 6px;
     padding: 6px 12px; font-size: 13px; cursor: pointer;
     display: flex; align-items: center; gap: 6px;
-    &:hover { background: #1345b0; }
+    &:hover { background: #009e52; }
   }
   .pagado-completo {
     color: #27AE60; font-size: 13px; font-weight: 600;
@@ -115,7 +115,7 @@
   .form-control {
     width: 100%; padding: 9px 12px; border: 1.5px solid #e0e0e0;
     border-radius: 8px; font-size: 14px; outline: none; box-sizing: border-box;
-    &:focus { border-color: #1a56db; }
+    &:focus { border-color: #00bf63; }
   }
 }
 
@@ -128,10 +128,10 @@
     &:hover { background: #e0e0e0; }
   }
   .btn-guardar-modal {
-    background: #1a56db; color: white; border: none; border-radius: 8px;
+    background: #00bf63; color: white; border: none; border-radius: 8px;
     padding: 10px 18px; font-size: 14px; font-weight: 600; cursor: pointer;
     display: flex; align-items: center; gap: 6px;
-    &:hover:not(:disabled) { background: #1345b0; }
+    &:hover:not(:disabled) { background: #009e52; }
     &:disabled { background: #aaa; cursor: not-allowed; }
   }
 }
